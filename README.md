@@ -1,12 +1,10 @@
-
 ----------------
 # KPS
-
 ----------------
 
-> Kareem Omar
-> kareem.omar@uah.edu
-> github.com/komrad36
+| Kareem Omar			|
+| kareem.omar@uah.edu	|
+| github.com/komrad36	|
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
@@ -319,9 +317,9 @@ Or, if the user aborted propagation:
 # KPS_Vis 
 The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
-    =============== =================================
+    =================================================
     Parameter		Description
-    --------------- ---------------------------------
+    -------------------------------------------------
     R				Position
     V				Velocity
     Q				Attitude Quaternion
@@ -330,7 +328,7 @@ The fun part! While KPS is simulating, or afterward (the files are saved to disk
     E				Pointing Error
     ALT				Altitude
     B_STAR			Starred Ballistic Coefficient
-    =============== =================================
+    =================================================
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
@@ -343,6 +341,6 @@ Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the fil
     PLOT_ALT = true
     PLOT_B_STAR = true
 
-More than about 3 plots or so will be too small to be useful. Then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
+More than about 3 plots or so will be too small to be useful. Choose the ones you want, then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
 
 The simulation starts in REALTIME mode, constantly checking for and adding any new data from the KPS output files. If it sees no change for a while, indicating that simulation has finished, it switches to FINAL mode, cleans up the plots, adjusts the axes, and enables interactive mode for the user, who is then free to zoom, scale, rotate, save plots to image files, etc. This utility requires the matplotlib and numpy modules. Some example screenshots are included with KPS.
