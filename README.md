@@ -3,7 +3,9 @@ KPS
 ----------------
 
 Kareem Omar
+
 kareem.omar@uah.edu
+
 github.com/komrad36
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
@@ -22,7 +24,7 @@ The Windows executable is called 'KPS.exe'. I provide it statically compiled, bu
 The Linux executable is just called 'KPS'.
 
 # But I want to compile it!
-Cool! Here are instructions for Windows and Linux.
+Here are instructions for Windows and Linux:
 
 # Instructions for Windows:
 You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA supports it. Open 'KPS.sln' in Visual Studio. There are 4 Build Configurations: Release, ReleaseStatic, Debug, and DebugStatic. They do exactly what it says on the box.
@@ -77,7 +79,7 @@ Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
 
-# UTILITIES 
+# Utilities 
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
 
 The configuration file specifies 21 parameters required by KPS to operate, in any order. Blank lines are ignored. Comments can be entered by beginning a line with #. Capitalization is ignored. A sample configuration file looks like this:
@@ -148,8 +150,11 @@ SAT_MASS = the mass of the satellite in kilograms. Typical value: 4
 SAT_MOI = the moment of inertia matrix of the satellite. To simplify input, pass in the 9 elements separated by comments, one row at a time. In other words, if the matrix looks like this:
 
 a b c
+
 d e f
+
 g h i
+
 
 You would specify ‘a, b, c, d, e, f, g, h, i’. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
 
@@ -168,7 +173,7 @@ To help users quickly generate different test orbits, I provide the KPS_GenOrbit
 
 For an x by y kilometer altitude elliptical orbit at i inclination (in degrees), simply call the utility like:
 
-> KPS_GenOrbit <x> <y> <i>
+> KPS_GenOrbit x y i
 
 The satellite will begin at the x portion of the orbit. For example, a 500 x 600 km orbit at 40° inclination in which the satellite begins at 500 km is requested as follows:
 
@@ -176,10 +181,10 @@ The satellite will begin at the x portion of the orbit. For example, a 500 x 600
 
 The system responds:
 
-Generating stats for a 500x600 km orbit at 40°...
-
-SAT_INIT_POS = 6871000, 0, 0
-SAT_INIT_V = 0, 5855.6619518398, 4913.4837840876
+> Generating stats for a 500x600 km orbit at 40°...
+>
+> SAT_INIT_POS = 6871000, 0, 0
+> SAT_INIT_V = 0, 5855.6619518398, 4913.4837840876
 
 That’s it! The bottom two lines can be copied and pasted directly into a KPS configuration file.
 
@@ -187,10 +192,10 @@ The polygon files expected by KPS specify the geometry of the satellite as a ser
 
 Up to 512 quadrilaterals are supported. Each quadrilateral consists of four coplanar points, each listed on its own line in the polygon file. Each point is a 3-vector in the Body frame with components in meters, separated by commas. The points must be in order, i.e. a line drawn from the first, through the second, through the third, through the fourth, and back to the first must complete the outline of the polygon. For example, a square with one corner at the origin, with area 1, lying entirely in the first quadrant of the x-y plane, could be defined by a portion of the polygon file that looks like this:
 
-0, 0, 0
-0, 1, 0
-1, 1, 0
-1, 0, 0
+> 0, 0, 0
+> 0, 1, 0
+> 1, 1, 0
+> 1, 0, 0
 
 There are other valid representations; what matters is that the points “flow” either clockwise or counter-clockwise such that a line drawn through them in order (and back to the first point again) would outline the polygon and not cross itself.
 
@@ -213,13 +218,13 @@ This utility allows users to convert Keplerian Elements to State Vectors. The ut
 
 The following table elaborates on each argument and its units:
 
-Argument	Name					Units
-a			Semi-major Axis			Meters
-e			Eccentricity			(Dimensionless)
-i			Inclination				Degrees
-Omega		RAAN or LAN				Degrees
-w			Argument of Perigee		Degrees
-M			Mean Anomaly			Degrees
+> Argument	Name					Units
+> a			Semi-major Axis			Meters
+> e			Eccentricity			(Dimensionless)
+> i			Inclination				Degrees
+> Omega		RAAN or LAN				Degrees
+> w			Argument of Perigee		Degrees
+> M			Mean Anomaly			Degrees
 
 For example, the user might wish to experiment with propagating an existing satellite. The user can obtain the TLEs for that satellite from NORAD online and input the Kelperian elements into KPS_Kepler2State, obtain state vectors, and use the state vectors to start a KPS propagation run.
 
@@ -229,8 +234,8 @@ Example:
 
 The system responds:
 
-Position Vector: 6871000, 0, 0 m
-Velocity Vector: 0, 5385.7217960362, 5385.7217960362 m/s
+> Position Vector: 6871000, 0, 0 m
+> Velocity Vector: 0, 5385.7217960362, 5385.7217960362 m/s
 
 # KPS_State2Kepler 
 This utility allows users to convert State Vectors to Keplerian Elements. One way to use the utility is to directly specify position and velocity vectors, in that order. The utility returns the six Keplerian elements (and some additional ones). The MATLAB version directly takes vectors:
@@ -243,14 +248,14 @@ The Python version takes the same arguments, but split up into six scalars:
 
 In either case, the system responds:
 
-True Anomaly: 0°
-Mean Anomaly: 0°
-Eccentric Anomaly: 0°
-Semi-major Axis: 6871000.0015514 m
-Eccentricity: 2.2579582648063e-10
-Argument of Periapsis: 0°
-Longitude of Ascending Node: 0°
-Inclination: 45°
+> True Anomaly: 0°
+> Mean Anomaly: 0°
+> Eccentric Anomaly: 0°
+> Semi-major Axis: 6871000.0015514 m
+> Eccentricity: 2.2579582648063e-10
+> Argument of Periapsis: 0°
+> Longitude of Ascending Node: 0°
+> Inclination: 45°
 
 There is however, a second way to call the utility. The user can specify just a single argument – a time, in seconds. KPS_State2Kepler will search through the most recent KPS simulation run and find the first step time at or after that value. The utility will extract the position and velocity at that time and convert it to Keplerian elements. Note that this option requires the numpy module.
 
@@ -260,17 +265,17 @@ For example:
 
 The system responds:
 
-Time: 500.02489376158 s
-Position Vector: 5840925.18459, 2557032.12153, 2556656.26142 m
-Velocity Vector: -4013.6839168, 4578.4141753, 4576.2060569 m/s
-True Anomaly: 255.25022284075°
-Mean Anomaly: -104.66942826045°
-Eccentric Anomaly: -104.70960455682°
-Semi-major Axis: 6868328.9059404 m
-Eccentricity: 0.00072496937822618 m
-Argument of Periapsis: 136.51435783804°
-Longitude of Ascending Node: 359.99391990602°
-Inclination: 44.988845461891°
+> Time: 500.02489376158 s
+> Position Vector: 5840925.18459, 2557032.12153, 2556656.26142 m
+> Velocity Vector: -4013.6839168, 4578.4141753, 4576.2060569 m/s
+> True Anomaly: 255.25022284075°
+> Mean Anomaly: -104.66942826045°
+> Eccentric Anomaly: -104.70960455682°
+> Semi-major Axis: 6868328.9059404 m
+> Eccentricity: 0.00072496937822618 m
+> Argument of Periapsis: 136.51435783804°
+> Longitude of Ascending Node: 359.99391990602°
+> Inclination: 44.988845461891°
 
 # KPS 
 The main event! The user runs KPS as follows:
@@ -279,62 +284,62 @@ The main event! The user runs KPS as follows:
 
 The system responds by echoing the parameters and other diagnostic information. If CUDA_DEVICE is set to NONE, the aerodynamics module reports CPU initialization:
 
-Initializing KAero...
-CPU KAero ready.
+> Initializing KAero...
+> CPU KAero ready.
 
 Otherwise, the aerodynamics module reports CUDA initialization:
 
-Initializing KAero...
-CUDA KAero initialized on device 0: GeForce GTX 780M
-CUDA KAero ready.
+> Initializing KAero...
+> CUDA KAero initialized on device 0: GeForce GTX 780M
+> CUDA KAero ready.
 
 If all initialization is successful, the system reports:
 
-KPS READY.
+> KPS READY.
 
 Propagation begins:
 
-Propagating:
- Step 37878 | 17042.926685 sec
+> Propagating:
+>  Step 37878 | 17042.926685 sec
 
 The counter updates in real-time with the current step count and the number of seconds of orbit simulated. Propagation continues until the TIME_SPAN requested in the configuration file is achieved, or until satellite deorbit occurs, whichever comes first. Upon completion, the system displays:
 
-Step 25054 | 10000.000000 sec
-Propagation complete in 5.522 sec realtime.
+> Step 25054 | 10000.000000 sec
+> Propagation complete in 5.522 sec realtime.
 
 Or, if deorbit occurred:
 
-Step 9448 | 63.861708 sec
-Satellite DEORBITED! Propagation complete in 3.423 sec realtime.
+> Step 9448 | 63.861708 sec
+> Satellite DEORBITED! Propagation complete in 3.423 sec realtime.
 
 Or, if the user aborted propagation:
 
-Step 3165 | 1044.177229 sec
-Propagation terminated by user after 0.749 sec realtime.
+> Step 3165 | 1044.177229 sec
+> Propagation terminated by user after 0.749 sec realtime.
 
 # KPS_Vis 
 The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
-Parameter		Description
-R				Position
-V				Velocity
-Q				Attitude Quaternion
-W				Angular Velocity
-V_B				Velocity (in Body Frame)
-E				Pointing Error
-ALT				Altitude
-B_STAR			Starred Ballistic Coefficient
+> Parameter		Description
+> R				Position
+> V				Velocity
+> Q				Attitude Quaternion
+> W				Angular Velocity
+> V_B				Velocity (in Body Frame)
+> E				Pointing Error
+> ALT				Altitude
+> B_STAR			Starred Ballistic Coefficient
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
-% PLOT_R = true
-% PLOT_V = true
-% PLOT_Q = true
-% PLOT_W = true
-% PLOT_V_B = true
-PLOT_E = true
-PLOT_ALT = true
-PLOT_B_STAR = true
+> % PLOT_R = true
+> % PLOT_V = true
+> % PLOT_Q = true
+> % PLOT_W = true
+> % PLOT_V_B = true
+> PLOT_E = true
+> PLOT_ALT = true
+> PLOT_B_STAR = true
 
 More than about 3 plots or so will be too small to be useful. Then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
 
