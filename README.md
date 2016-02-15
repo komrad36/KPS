@@ -85,25 +85,45 @@ The KPS main propagator is run with two arguments: a polygon file, and a configu
 The configuration file specifies 21 parameters required by KPS to operate, in any order. Blank lines are ignored. Comments can be entered by beginning a line with #. Capitalization is ignored. A sample configuration file looks like this:
 
 MAG_GAIN = 25e3
+
 TIME_SINCE_EPOCH_AT_DEPLOY = 0.0
+
 GRAV_MODEL = wgs84
+
 PROPAGATOR = abm
+
 CUDA_DEVICE = NONE
+
 ABS_TOL = 1e-8
+
 REL_TOL = 2.3e-14
+
 KAERO_PITCH = 0.01
+
 MAX_STEP_SIZE = 26000
+
 MAG_MODEL = wmm2015
+
 MAG_YEAR = 2016
+
 BINARY_OUTPUT = true
+
 REALTIME_OUTPUT = true
+
 SAT_CM = 0, 0, 0
+
 SAT_INIT_POS = 6871000, 0, 0
+
 SAT_INIT_V = 0, 5385.72, 5385.72
+
 SAT_INIT_Q = 1, 0, 0, 0
+
 SAT_INIT_W = 0.008, -0.05, 0.003
+
 SAT_MASS = 8.0
+
 SAT_MOI = 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
+
 TIME_SPAN = 500000
 
 
@@ -193,9 +213,13 @@ The polygon files expected by KPS specify the geometry of the satellite as a ser
 Up to 512 quadrilaterals are supported. Each quadrilateral consists of four coplanar points, each listed on its own line in the polygon file. Each point is a 3-vector in the Body frame with components in meters, separated by commas. The points must be in order, i.e. a line drawn from the first, through the second, through the third, through the fourth, and back to the first must complete the outline of the polygon. For example, a square with one corner at the origin, with area 1, lying entirely in the first quadrant of the x-y plane, could be defined by a portion of the polygon file that looks like this:
 
 > 0, 0, 0
+
 > 0, 1, 0
+
 > 1, 1, 0
+
 > 1, 0, 0
+
 
 There are other valid representations; what matters is that the points “flow” either clockwise or counter-clockwise such that a line drawn through them in order (and back to the first point again) would outline the polygon and not cross itself.
 
@@ -214,17 +238,24 @@ After producing a polygon file, the user should verify that the satellite has be
 # KPS_Kepler2State 
 This utility allows users to convert Keplerian Elements to State Vectors. The utility takes the six Keplerian elements as arguments, as follows:
 
-> KPS_Kepler2State <a> <e> <w> <Omega> <i> <M>
+> KPS_Kepler2State a e w Omega i M
 
 The following table elaborates on each argument and its units:
 
 > Argument	Name					Units
+
 > a			Semi-major Axis			Meters
+
 > e			Eccentricity			(Dimensionless)
+
 > i			Inclination				Degrees
+
 > Omega		RAAN or LAN				Degrees
+
 > w			Argument of Perigee		Degrees
+
 > M			Mean Anomaly			Degrees
+
 
 For example, the user might wish to experiment with propagating an existing satellite. The user can obtain the TLEs for that satellite from NORAD online and input the Kelperian elements into KPS_Kepler2State, obtain state vectors, and use the state vectors to start a KPS propagation run.
 
