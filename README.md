@@ -4,9 +4,9 @@
 
 ----------------
 
-    Kareem Omar
-    kareem.omar@uah.edu
-    github.com/komrad36
+> Kareem Omar
+> kareem.omar@uah.edu
+> github.com/komrad36
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
@@ -170,7 +170,7 @@ To help users quickly generate different test orbits, I provide the KPS_GenOrbit
 
 For an x by y kilometer altitude elliptical orbit at i inclination (in degrees), simply call the utility like:
 
-    KPS_GenOrbit x y i
+    KPS_GenOrbit <x> <y> <i>
 
 The satellite will begin at the x portion of the orbit. For example, a 500 x 600 km orbit at 40° inclination in which the satellite begins at 500 km is requested as follows:
 
@@ -210,7 +210,7 @@ After producing a polygon file, the user should verify that the satellite has be
 # KPS_Kepler2State 
 This utility allows users to convert Keplerian Elements to State Vectors. The utility takes the six Keplerian elements as arguments, as follows:
 
-    KPS_Kepler2State a e w Omega i M
+    KPS_Kepler2State <a> <e> <w> <Omega> <i> <M>
 
 The following table elaborates on each argument and its units:
 
