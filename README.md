@@ -6,11 +6,19 @@
 ## kareem.omar@uah.edu ##
 ## github.com/komrad36 ##
 
+- - - -
+
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/elliptical.png "Decay and Circularization of Elliptical Orbit")
+
+- - - -
 
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/gradient.png "Satellite in Dart Configuration")
 
+- - - -
+
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/pos_wgs.png "Perturbations in Orbital Position due to Ellipsoidal Earth")
+
+- - - -
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
