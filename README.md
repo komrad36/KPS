@@ -8,14 +8,18 @@
 
 - - - -
 
+![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/3U_dart.png "Satellite in Dart Configuration")
+
+
+- - - -
+
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/elliptical.png "Decay and Circularization of Elliptical Orbit")
 
 - - - -
 
-![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/gradient.png "Satellite in Dart Configuration")
+![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/stable.png "Stabilization of Dart due to Magnetorque and Aerodynamics")
 
 - - - -
-
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/pos_wgs.png "Perturbations in Orbital Position due to Ellipsoidal Earth")
 
 - - - -
