@@ -1,24 +1,27 @@
-# KPS
-# Kareem Omar
-# kareem.omar@uah.edu
-# github.com/komrad36
+----------------
+KPS
+----------------
+
+Kareem Omar
+kareem.omar@uah.edu
+github.com/komrad36
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
 Realtime visualization and other useful tools are dually available as MATLAB(R) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace
 and high-performance computing.
 
-# OBTAINING THE SOFTWARE
+# Obtaining the software
 Head to github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
 
-# DO I NEED TO COMPILE IT? I JUST WANT TO USE IT
+# Do I need to compile it?
 No. I provide precompiled binaries for those who just want to use the application and not study its code or modify it. Furthermore, they are *statically* compiled, so you don't have to download any runtime libraries at all. The executables just work, standalone, on both Windows and Linux.
 
 The Windows executable is called 'KPS.exe'. I provide it statically compiled, but if you compile it yourself and do so using the dynamic configuration, it will require the CUDA runtime libraries around it to run.
 
 The Linux executable is just called 'KPS'.
 
-# I WANT TO COMPILE IT 
+# But I want to compile it!
 Cool! Here are instructions for Windows and Linux.
 
 # Instructions for Windows:
