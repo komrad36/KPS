@@ -204,6 +204,7 @@ The system responds:
 > Generating stats for a 500x600 km orbit at 40°...
 >
 > SAT_INIT_POS = 6871000, 0, 0
+>
 > SAT_INIT_V = 0, 5855.6619518398, 4913.4837840876
 
 That’s it! The bottom two lines can be copied and pasted directly into a KPS configuration file.
@@ -242,6 +243,7 @@ This utility allows users to convert Keplerian Elements to State Vectors. The ut
 
 The following table elaborates on each argument and its units:
 
+"""
 > Argument	Name					Units
 
 > a			Semi-major Axis			Meters
@@ -254,7 +256,7 @@ The following table elaborates on each argument and its units:
 
 > w			Argument of Perigee		Degrees
 
-> M			Mean Anomaly			Degrees
+> M			Mean Anomaly			Degrees"""
 
 
 For example, the user might wish to experiment with propagating an existing satellite. The user can obtain the TLEs for that satellite from NORAD online and input the Kelperian elements into KPS_Kepler2State, obtain state vectors, and use the state vectors to start a KPS propagation run.
@@ -266,6 +268,7 @@ Example:
 The system responds:
 
 > Position Vector: 6871000, 0, 0 m
+
 > Velocity Vector: 0, 5385.7217960362, 5385.7217960362 m/s
 
 # KPS_State2Kepler 
@@ -280,12 +283,19 @@ The Python version takes the same arguments, but split up into six scalars:
 In either case, the system responds:
 
 > True Anomaly: 0°
+
 > Mean Anomaly: 0°
+
 > Eccentric Anomaly: 0°
+
 > Semi-major Axis: 6871000.0015514 m
+
 > Eccentricity: 2.2579582648063e-10
+
 > Argument of Periapsis: 0°
+
 > Longitude of Ascending Node: 0°
+
 > Inclination: 45°
 
 There is however, a second way to call the utility. The user can specify just a single argument – a time, in seconds. KPS_State2Kepler will search through the most recent KPS simulation run and find the first step time at or after that value. The utility will extract the position and velocity at that time and convert it to Keplerian elements. Note that this option requires the numpy module.
@@ -297,15 +307,25 @@ For example:
 The system responds:
 
 > Time: 500.02489376158 s
+
 > Position Vector: 5840925.18459, 2557032.12153, 2556656.26142 m
+
 > Velocity Vector: -4013.6839168, 4578.4141753, 4576.2060569 m/s
+
 > True Anomaly: 255.25022284075°
+
 > Mean Anomaly: -104.66942826045°
+
 > Eccentric Anomaly: -104.70960455682°
+
 > Semi-major Axis: 6868328.9059404 m
+
 > Eccentricity: 0.00072496937822618 m
+
 > Argument of Periapsis: 136.51435783804°
+
 > Longitude of Ascending Node: 359.99391990602°
+
 > Inclination: 44.988845461891°
 
 # KPS 
@@ -352,24 +372,39 @@ Or, if the user aborted propagation:
 The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
 > Parameter		Description
+
 > R				Position
+
 > V				Velocity
+
 > Q				Attitude Quaternion
+
 > W				Angular Velocity
-> V_B				Velocity (in Body Frame)
+
+> V_B			Velocity (in Body Frame)
+
 > E				Pointing Error
-> ALT				Altitude
-> B_STAR			Starred Ballistic Coefficient
+
+> ALT			Altitude
+
+> B_STAR		Starred Ballistic Coefficient
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
 > % PLOT_R = true
+
 > % PLOT_V = true
+
 > % PLOT_Q = true
+
 > % PLOT_W = true
+
 > % PLOT_V_B = true
+
 > PLOT_E = true
+
 > PLOT_ALT = true
+
 > PLOT_B_STAR = true
 
 More than about 3 plots or so will be too small to be useful. Then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
