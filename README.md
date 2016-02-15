@@ -4,7 +4,7 @@
 
 ## Kareem Omar ##
 ## kareem.omar@uah.edu ##
-## github.com/komrad36 ##
+## http://github.com/komrad36 ##
 
 - - - -
 
