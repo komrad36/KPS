@@ -371,23 +371,25 @@ Or, if the user aborted propagation:
 # KPS_Vis 
 The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
-> Parameter		Description
-
-> R				Position
-
-> V				Velocity
-
-> Q				Attitude Quaternion
-
-> W				Angular Velocity
-
-> V_B			Velocity (in Body Frame)
-
-> E				Pointing Error
-
-> ALT			Altitude
-
-> B_STAR		Starred Ballistic Coefficient
+=============== =================================
+Parameter		Description
+--------------- ---------------------------------
+R				Position
+--------------- ---------------------------------
+V				Velocity
+--------------- ---------------------------------
+Q				Attitude Quaternion
+--------------- ---------------------------------
+W				Angular Velocity
+--------------- ---------------------------------
+V_B				Velocity (in Body Frame)
+--------------- ---------------------------------
+E				Pointing Error
+--------------- ---------------------------------
+ALT				Altitude
+--------------- ---------------------------------
+B_STAR			Starred Ballistic Coefficient
+=============== =================================
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
