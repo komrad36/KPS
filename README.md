@@ -375,39 +375,25 @@ The fun part! While KPS is simulating, or afterward (the files are saved to disk
     Parameter		Description
     --------------- ---------------------------------
     R				Position
-    --------------- ---------------------------------
     V				Velocity
-    --------------- ---------------------------------
     Q				Attitude Quaternion
-    --------------- ---------------------------------
     W				Angular Velocity
-    --------------- ---------------------------------
     V_B				Velocity (in Body Frame)
-    --------------- ---------------------------------
     E				Pointing Error
-    --------------- ---------------------------------
     ALT				Altitude
-    --------------- ---------------------------------
     B_STAR			Starred Ballistic Coefficient
     =============== =================================
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
-> % PLOT_R = true
-
-> % PLOT_V = true
-
-> % PLOT_Q = true
-
-> % PLOT_W = true
-
-> % PLOT_V_B = true
-
-> PLOT_E = true
-
-> PLOT_ALT = true
-
-> PLOT_B_STAR = true
+    > % PLOT_R = true
+    > % PLOT_V = true
+    > % PLOT_Q = true
+    > % PLOT_W = true
+    > % PLOT_V_B = true
+    > PLOT_E = true
+    > PLOT_ALT = true
+    > PLOT_B_STAR = true
 
 More than about 3 plots or so will be too small to be useful. Then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
 
