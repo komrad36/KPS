@@ -1,27 +1,27 @@
->> KPS
->> Kareem Omar
->> kareem.omar@uah.edu
->> github.com/komrad36
+# KPS
+# Kareem Omar
+# kareem.omar@uah.edu
+# github.com/komrad36
 
 KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
 Realtime visualization and other useful tools are dually available as MATLAB(R) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace
 and high-performance computing.
 
->> OBTAINING THE SOFTWARE
+# OBTAINING THE SOFTWARE
 Head to github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
 
->> DO I NEED TO COMPILE IT? I JUST WANT TO USE IT
+# DO I NEED TO COMPILE IT? I JUST WANT TO USE IT
 No. I provide precompiled binaries for those who just want to use the application and not study its code or modify it. Furthermore, they are *statically* compiled, so you don't have to download any runtime libraries at all. The executables just work, standalone, on both Windows and Linux.
 
 The Windows executable is called 'KPS.exe'. I provide it statically compiled, but if you compile it yourself and do so using the dynamic configuration, it will require the CUDA runtime libraries around it to run.
 
 The Linux executable is just called 'KPS'.
 
->> I WANT TO COMPILE IT 
+# I WANT TO COMPILE IT 
 Cool! Here are instructions for Windows and Linux.
 
->> Instructions for Windows:
+# Instructions for Windows:
 You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA supports it. Open 'KPS.sln' in Visual Studio. There are 4 Build Configurations: Release, ReleaseStatic, Debug, and DebugStatic. They do exactly what it says on the box.
 
 Four external libraries are needed:
@@ -53,7 +53,7 @@ The Visual Studio solution actually contains 7 projects – KPS itself and its 6 s
 
 Make sure KPS itself (the first project listed) is selected, and you’re ready to build.
 
->> Instructions for Linux:
+# Instructions for Linux:
 
 Four external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
@@ -74,13 +74,11 @@ Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
 
->> UTILITIES 
+# UTILITIES 
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
 
 The configuration file specifies 21 parameters required by KPS to operate, in any order. Blank lines are ignored. Comments can be entered by beginning a line with #. Capitalization is ignored. A sample configuration file looks like this:
 
-# Sample configuration file for KPS
-# https://github.com/komrad36/KPS
 MAG_GAIN = 25e3
 TIME_SINCE_EPOCH_AT_DEPLOY = 0.0
 GRAV_MODEL = wgs84
@@ -162,7 +160,7 @@ http://geographiclib.sourceforge.net/html/magnetic.html#magneticinst
 If the user specifies a gravity model of POINT, no download is needed. For a more complex model, the appropriate data can similarly be downloaded from here:
 http://geographiclib.sourceforge.net/html/gravity.html#gravityinst
 
->> KPS_GenOrbit 
+# KPS_GenOrbit 
 To help users quickly generate different test orbits, I provide the KPS_GenOrbit tool (in both Python and MATLAB/Octave, as with all the ancillary tools around KPS). KPS_GenOrbit is the simplest of these utilities. It allows the user to turn a requested orbit, such as “500 x 600 km at 40° inclination”, into the SAT_INIT_R and SAT_INIT_V (initial position and velocity) parameters required by the configuration file.
 
 For an x by y kilometer altitude elliptical orbit at i inclination (in degrees), simply call the utility like:
@@ -195,17 +193,17 @@ There are other valid representations; what matters is that the points “flow” ei
 
 After listing one polygon, simply list the next after it. Leaving a blank line is optional; they are ignored. List as many polygons as is required to define your satellite. The order of the *polygons* does not matter, only the order of the vertices within each polygon.
 
->> KPS_GenPoly 
+# KPS_GenPoly 
 The KPS_GenPoly tool helps generate these files by allowing the user to customize a Python or MATLAB script to generate numerical values.
 
 For example, consider a satellite whose geometry includes a solar panel that can deploy at different angles. Say the user wishes to run KPS on several different panel angles. Rather than having to manually compute the numerical values of the solar panel polygon for every deployment angle, the user can enter an expression such as 0.5+cos(panel_angle) in the KPS_GenPoly script.
 
 The entire polygon can be constructed this way, in terms of variables chosen freely by the user. These variables can then be set at the top of the script, and the script can then be executed to output a polygon file with the correct numerical values. Changing the panel angle, in this case, would simply require changing the variable at the top and re-running the script, and KPS would be ready to simulate the new angle immediately.
 
->> KPS_PlotPoly 
+# KPS_PlotPoly 
 After producing a polygon file, the user should verify that the satellite has been described correctly. For this reason I provide the KPS_PlotPoly utility, which plots a KPS polygon file of the sort generated by KPS_GenPoly in 3-D for a user to inspect. It takes one argument – the name of the polygon file to load. It parses the file and produces an interactive 3-D plot for the user. This utility requires the matplotlib and numpy modules.
 
->> KPS_Kepler2State 
+# KPS_Kepler2State 
 This utility allows users to convert Keplerian Elements to State Vectors. The utility takes the six Keplerian elements as arguments, as follows:
 
 > KPS_Kepler2State <a> <e> <w> <Omega> <i> <M>
@@ -231,7 +229,7 @@ The system responds:
 Position Vector: 6871000, 0, 0 m
 Velocity Vector: 0, 5385.7217960362, 5385.7217960362 m/s
 
->> KPS_State2Kepler 
+# KPS_State2Kepler 
 This utility allows users to convert State Vectors to Keplerian Elements. One way to use the utility is to directly specify position and velocity vectors, in that order. The utility returns the six Keplerian elements (and some additional ones). The MATLAB version directly takes vectors:
 
 > KPS_State2Kepler([6871000, 0, 0], [0, 5385, 5385])
@@ -271,7 +269,7 @@ Argument of Periapsis: 136.51435783804°
 Longitude of Ascending Node: 359.99391990602°
 Inclination: 44.988845461891°
 
->> KPS 
+# KPS 
 The main event! The user runs KPS as follows:
 
 > KPS poly.kps config.kps
@@ -311,7 +309,7 @@ Or, if the user aborted propagation:
 Step 3165 | 1044.177229 sec
 Propagation terminated by user after 0.749 sec realtime.
 
->> KPS_Vis 
+# KPS_Vis 
 The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
 Parameter		Description
@@ -324,19 +322,16 @@ E				Pointing Error
 ALT				Altitude
 B_STAR			Starred Ballistic Coefficient
 
-Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the Python version shows:
+Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
-# Don't change these to False; simply comment
-# out the ones you don't want.
-
-# PLOT_R = True
-# PLOT_V = True
-# PLOT_Q = True
-# PLOT_W = True
-# PLOT_V_B = True
-PLOT_E = True
-PLOT_ALT = True
-PLOT_B_STAR = True
+% PLOT_R = true
+% PLOT_V = true
+% PLOT_Q = true
+% PLOT_W = true
+% PLOT_V_B = true
+PLOT_E = true
+PLOT_ALT = true
+PLOT_B_STAR = true
 
 More than about 3 plots or so will be too small to be useful. Then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
 
