@@ -29,7 +29,7 @@
 
 ## Overview ##
 
-KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linnux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
+KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
 Realtime visualization and other useful tools are dually available as MATLAB(R) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace
 and high-performance computing.
@@ -65,7 +65,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (theyíre header only!) and install CUDA and GeographicLib and point Visual Studio to them in the KPS projectís configuration, under Configuration Properties -    VC++ Directories. Youíll need to modify both the Include Directories and Library Directories fields.
+Download Eigen and GLM (they‚Äôre header only!) and install CUDA and GeographicLib and point Visual Studio to them in the KPS project‚Äôs configuration, under Configuration Properties -    VC++ Directories. You‚Äôll need to modify both the Include Directories and Library Directories fields.
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
@@ -75,9 +75,9 @@ My Include Directories and Library Directories look like this, respectively, for
 
 Just modify the entries to match the include and lib locations where you installed the libraries.
 
-The Visual Studio solution actually contains 7 projects ñ KPS itself and its 6 supporting projects. Those are all Python projects (also available in MATLAB/Octave) and donít need compiling. You can just run them directly with Python 3.4.
+The Visual Studio solution actually contains 7 projects ‚Äì KPS itself and its 6 supporting projects. Those are all Python projects (also available in MATLAB/Octave) and don‚Äôt need compiling. You can just run them directly with Python 3.4.
 
-Make sure KPS itself (the first project listed) is selected, and youíre ready to build.
+Make sure KPS itself (the first project listed) is selected, and you‚Äôre ready to build.
 
 ### Instructions for Linux: ###
 
@@ -96,9 +96,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (theyíre header only!) and install CUDA and GeographicLib. Open the ëMakefileí and adjust the Includes and Library paths *if needed* (you probably wonít have to if you let everything install to its default locations).
+Download Eigen and GLM (they‚Äôre header only!) and install CUDA and GeographicLib. Open the ‚ÄòMakefile‚Äô and adjust the Includes and Library paths *if needed* (you probably won‚Äôt have to if you let everything install to its default locations).
 
-Type ëmakeí to compile with a dynamic link to the CUDA runtime libraries. Type ëmake staticí to compile the static and fully standalone version.
+Type ‚Äòmake‚Äô to compile with a dynamic link to the CUDA runtime libraries. Type ‚Äòmake static‚Äô to compile the static and fully standalone version.
 
 ## Utilities ##
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
@@ -129,41 +129,41 @@ The configuration file specifies 21 parameters required by KPS to operate, in an
 
 These parameters will now be explained individually:
 
-MAG_GAIN = a positive magnetorque gain factor. Magnetorque is currently coded to react against the satelliteís angular velocity, attempting to slow down the satelliteís rotation. Specify a 0 gain factor to disable magnetic torque. Typical value for CubeSat: 30000
+MAG_GAIN = a positive magnetorque gain factor. Magnetorque is currently coded to react against the satellite‚Äôs angular velocity, attempting to slow down the satellite‚Äôs rotation. Specify a 0 gain factor to disable magnetic torque. Typical value for CubeSat: 30000
 
 TIME_SINCE_EPOCH_AT_DEPLOY = seconds since epoch (when the ECI and ECEF frame coincide) at the start of simulation. Typical value: 0
 
 GRAV_MODEL = the GeographicLib gravity model to use for gravitational acceleration. Higher quality models are slower. Available models are: "POINT", "WGS84", "EGM84", "EGM96", and "EGM2008". In order to use a model (other than POINT), you must download the (small) gravity model file for that model from http://geographiclib.sourceforge.net/html/gravity.html. Typical value: wgs84
 
-PROPAGATOR = the numerical integrator to use. Available integrators are: ìRKDPî and ìABMî. The first is a Runge-Kutta Dormand-Prince pair solver, like MATLABís ode45(). The second is a faster and more accurate Adams-Bashforth-Moulton linear multistep solver, like MATLABís ode113(). ABM should generally be used.
+PROPAGATOR = the numerical integrator to use. Available integrators are: ‚ÄúRKDP‚Äù and ‚ÄúABM‚Äù. The first is a Runge-Kutta Dormand-Prince pair solver, like MATLAB‚Äôs ode45(). The second is a faster and more accurate Adams-Bashforth-Moulton linear multistep solver, like MATLAB‚Äôs ode113(). ABM should generally be used.
 
-CUDA_DEVICE = the device ID of the CUDA device to be used for aerodynamics. Specify AUTO to autoselect the fastest CUDA device on your system, or NONE to use CPU only. NOTE: for large linear pitch values, CPU can be *faster* due to the overhead of constantly preparing data for GPU processing ñ experiment and see what is fastest for your configuration.
+CUDA_DEVICE = the device ID of the CUDA device to be used for aerodynamics. Specify AUTO to autoselect the fastest CUDA device on your system, or NONE to use CPU only. NOTE: for large linear pitch values, CPU can be *faster* due to the overhead of constantly preparing data for GPU processing ‚Äì experiment and see what is fastest for your configuration.
 
 ABS_TOL = the absolute tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation. Typical value: 1e-6
 
 REL_TOL = the relative tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation, but unlike absolute tolerance, a low relative tolerance is *critical* for a chaotic system like satellite propagation. Typical value: 2.3e-14
 
-KAERO_PITCH = the linear pitch between test particle collisions for the aerodynamics Monte Carlo, in meters. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so donít make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
+KAERO_PITCH = the linear pitch between test particle collisions for the aerodynamics Monte Carlo, in meters. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so don‚Äôt make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
 
-MAX_STEP_SIZE = the maximum step size in seconds between two steps during integration. The integrators are both adaptive step size, meaning that they adjust the step size as necessary to maintain the requested tolerances while moving as fast as they can. This value doesnít usually need to be adjusted. Typical value: 26000 
+MAX_STEP_SIZE = the maximum step size in seconds between two steps during integration. The integrators are both adaptive step size, meaning that they adjust the step size as necessary to maintain the requested tolerances while moving as fast as they can. This value doesn‚Äôt usually need to be adjusted. Typical value: 26000 
 
 MAG_MODEL = the GeographicLib magnetic model to use for local Earth magnetic field determination (used for magnetic torque). Higher quality models are slower. Available models are: "WMM2010", "WMM2015", "IGRF11", "IGRF12", "EMM2010", and "EMM2015". In order to use a model, you must download the (small) magnetic model file for that model from http://geographiclib.sourceforge.net/html/magnetic.html. Typical value: wmm2015
 
-MAG_YEAR = the year for which the magnetic model will return data. Earthís magnetic field changes over time, so the GeographicLib models require the year as an input. Typical value: 2016
+MAG_YEAR = the year for which the magnetic model will return data. Earth‚Äôs magnetic field changes over time, so the GeographicLib models require the year as an input. Typical value: 2016
 
-BINARY_OUTPUT = either ëtrueí or ëfalseí. ëtrueí causes the outputs of KPS to be packed double-precision floating point values. This is the fastest option and is the ONLY one that works with KPS_Vis, the realtime and post visualization tool included with KPS. If, however, you want to be able to easily read and export the data, specify ëfalseí to produce ASCII .csv files instead. Typical value: ëtrueí
+BINARY_OUTPUT = either ‚Äòtrue‚Äô or ‚Äòfalse‚Äô. ‚Äòtrue‚Äô causes the outputs of KPS to be packed double-precision floating point values. This is the fastest option and is the ONLY one that works with KPS_Vis, the realtime and post visualization tool included with KPS. If, however, you want to be able to easily read and export the data, specify ‚Äòfalse‚Äô to produce ASCII .csv files instead. Typical value: ‚Äòtrue‚Äô
 
-REALTIME_OUTPUT = either ëtrueí or ëfalseí. ëtrueí causes KPS to flush the output buffer after every write so KPS_Vis, the realtime visualization, can immediately and smoothly display the latest data. Disabling this option will not affect final output but may cause realtime visualization to look choppy or fail altogether, but may (slightly) increase performance. Typical value: ëtrueí
+REALTIME_OUTPUT = either ‚Äòtrue‚Äô or ‚Äòfalse‚Äô. ‚Äòtrue‚Äô causes KPS to flush the output buffer after every write so KPS_Vis, the realtime visualization, can immediately and smoothly display the latest data. Disabling this option will not affect final output but may cause realtime visualization to look choppy or fail altogether, but may (slightly) increase performance. Typical value: ‚Äòtrue‚Äô
 
 SAT_CM = the center of mass of the satellite in the Body frame. Useful if you want to experiment with different CMs without having to shift all the coordinates in the polygon file, which is what would be required if I assumed the CM was always at the origin. Separate the three components x, y, and z by commas. For example - typical value: 0, 0, 0
 
-SAT_INIT_POS = the satelliteís initial position in the ECI frame in meters. Separate the three components x, y, and z by commas. For example - typical value: 6871000, 0, 0
+SAT_INIT_POS = the satellite‚Äôs initial position in the ECI frame in meters. Separate the three components x, y, and z by commas. For example - typical value: 6871000, 0, 0
 
-SAT_INIT_V = the satelliteís initial velocity in the ECI frame in meters per second. Separate the three components x, y, and z by commas. For example - typical value: 0, 5385, 5385
+SAT_INIT_V = the satellite‚Äôs initial velocity in the ECI frame in meters per second. Separate the three components x, y, and z by commas. For example - typical value: 0, 5385, 5385
 
-SAT_INIT_Q = the satelliteís initial orientation as a unit quaternion (a versor) representing a rotation of the ECI frame into the Body frame, or equivalently, a *vector* in the Body frame into the ECI frame. Separate the four components w, x, y, and z by commas. For example - typical value: 1, 0, 0, 0
+SAT_INIT_Q = the satellite‚Äôs initial orientation as a unit quaternion (a versor) representing a rotation of the ECI frame into the Body frame, or equivalently, a *vector* in the Body frame into the ECI frame. Separate the four components w, x, y, and z by commas. For example - typical value: 1, 0, 0, 0
 
-SAT_INIT_W = the satelliteís initial angular velocity in the Body frame in radians per second. Separate the three components x, y, and z by commas. For example - typical value: 0.008, -0.05, 0.003
+SAT_INIT_W = the satellite‚Äôs initial angular velocity in the Body frame in radians per second. Separate the three components x, y, and z by commas. For example - typical value: 0.008, -0.05, 0.003
 
 SAT_MASS = the mass of the satellite in kilograms. Typical value: 4
 
@@ -174,7 +174,7 @@ SAT_MOI = the moment of inertia matrix of the satellite. To simplify input, pass
     g h i
 
 
-You would specify ëa, b, c, d, e, f, g, h, ií. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
+You would specify ‚Äòa, b, c, d, e, f, g, h, i‚Äô. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
 
 TIME_SPAN = the number of seconds to simulate. You can abort the simulation early at any time by closing the console window or pressing CTRL+C. Typical value: 500000
 
@@ -187,23 +187,23 @@ If the user specifies a gravity model of POINT, no download is needed. For a mor
 http://geographiclib.sourceforge.net/html/gravity.html#gravityinst
 
 ## KPS_GenOrbit ##
-To help users quickly generate different test orbits, I provide the KPS_GenOrbit tool (in both Python and MATLAB/Octave, as with all the ancillary tools around KPS). KPS_GenOrbit is the simplest of these utilities. It allows the user to turn a requested orbit, such as ì500 x 600 km at 40∞ inclinationî, into the SAT_INIT_R and SAT_INIT_V (initial position and velocity) parameters required by the configuration file.
+To help users quickly generate different test orbits, I provide the KPS_GenOrbit tool (in both Python and MATLAB/Octave, as with all the ancillary tools around KPS). KPS_GenOrbit is the simplest of these utilities. It allows the user to turn a requested orbit, such as ‚Äú500 x 600 km at 40¬∞ inclination‚Äù, into the SAT_INIT_R and SAT_INIT_V (initial position and velocity) parameters required by the configuration file.
 
 For an x by y kilometer altitude elliptical orbit at i inclination (in degrees), simply call the utility like:
 
     KPS_GenOrbit <x> <y> <i>
 
-The satellite will begin at the x portion of the orbit. For example, a 500 x 600 km orbit at 40∞ inclination in which the satellite begins at 500 km is requested as follows:
+The satellite will begin at the x portion of the orbit. For example, a 500 x 600 km orbit at 40¬∞ inclination in which the satellite begins at 500 km is requested as follows:
 
     KPS_GenOrbit 500 600 40
 
 The system responds:
 
-    Generating stats for a 500x600 km orbit at 40∞...
+    Generating stats for a 500x600 km orbit at 40¬∞...
     SAT_INIT_POS = 6871000, 0, 0
     SAT_INIT_V = 0, 5855.6619518398, 4913.4837840876
 
-Thatís it! The bottom two lines can be copied and pasted directly into a KPS configuration file.
+That‚Äôs it! The bottom two lines can be copied and pasted directly into a KPS configuration file.
 
 The polygon files expected by KPS specify the geometry of the satellite as a series of polygons. By default, these polygons must be quadrilaterals, although this can be changed if necessary (a recompile is required).
 
@@ -214,7 +214,7 @@ Up to 512 quadrilaterals are supported. Each quadrilateral consists of four copl
     1, 1, 0
     1, 0, 0
 
-There are other valid representations; what matters is that the points ìflowî either clockwise or counter-clockwise such that a line drawn through them in order (and back to the first point again) would outline the polygon and not cross itself.
+There are other valid representations; what matters is that the points ‚Äúflow‚Äù either clockwise or counter-clockwise such that a line drawn through them in order (and back to the first point again) would outline the polygon and not cross itself.
 
 After listing one polygon, simply list the next after it. Leaving a blank line is optional; they are ignored. List as many polygons as is required to define your satellite. The order of the *polygons* does not matter, only the order of the vertices within each polygon.
 
@@ -226,7 +226,7 @@ For example, consider a satellite whose geometry includes a solar panel that can
 The entire polygon can be constructed this way, in terms of variables chosen freely by the user. These variables can then be set at the top of the script, and the script can then be executed to output a polygon file with the correct numerical values. Changing the panel angle, in this case, would simply require changing the variable at the top and re-running the script, and KPS would be ready to simulate the new angle immediately.
 
 ## KPS_PlotPoly ##
-After producing a polygon file, the user should verify that the satellite has been described correctly. For this reason I provide the KPS_PlotPoly utility, which plots a KPS polygon file of the sort generated by KPS_GenPoly in 3-D for a user to inspect. It takes one argument ñ the name of the polygon file to load. It parses the file and produces an interactive 3-D plot for the user. This utility requires the matplotlib and numpy modules.
+After producing a polygon file, the user should verify that the satellite has been described correctly. For this reason I provide the KPS_PlotPoly utility, which plots a KPS polygon file of the sort generated by KPS_GenPoly in 3-D for a user to inspect. It takes one argument ‚Äì the name of the polygon file to load. It parses the file and produces an interactive 3-D plot for the user. This utility requires the matplotlib and numpy modules.
 
 ## KPS_Kepler2State ##
 This utility allows users to convert Keplerian Elements to State Vectors. The utility takes the six Keplerian elements as arguments, as follows:
@@ -266,16 +266,16 @@ The Python version takes the same arguments, but split up into six scalars:
 
 In either case, the system responds:
 
-    True Anomaly: 0∞
-    Mean Anomaly: 0∞
-    Eccentric Anomaly: 0∞
+    True Anomaly: 0¬∞
+    Mean Anomaly: 0¬∞
+    Eccentric Anomaly: 0¬∞
     Semi-major Axis: 6871000.0015514 m
     Eccentricity: 2.2579582648063e-10
-    Argument of Periapsis: 0∞
-    Longitude of Ascending Node: 0∞
-    Inclination: 45∞
+    Argument of Periapsis: 0¬∞
+    Longitude of Ascending Node: 0¬∞
+    Inclination: 45¬∞
 
-There is however, a second way to call the utility. The user can specify just a single argument ñ a time, in seconds. KPS_State2Kepler will search through the most recent KPS simulation run and find the first step time at or after that value. The utility will extract the position and velocity at that time and convert it to Keplerian elements. Note that this option requires the numpy module.
+There is however, a second way to call the utility. The user can specify just a single argument ‚Äì a time, in seconds. KPS_State2Kepler will search through the most recent KPS simulation run and find the first step time at or after that value. The utility will extract the position and velocity at that time and convert it to Keplerian elements. Note that this option requires the numpy module.
 
 For example:
 
@@ -286,14 +286,14 @@ The system responds:
     Time: 500.02489376158 s
     Position Vector: 5840925.18459, 2557032.12153, 2556656.26142 m
     Velocity Vector: -4013.6839168, 4578.4141753, 4576.2060569 m/s
-    True Anomaly: 255.25022284075∞
-    Mean Anomaly: -104.66942826045∞
-    Eccentric Anomaly: -104.70960455682∞
+    True Anomaly: 255.25022284075¬∞
+    Mean Anomaly: -104.66942826045¬∞
+    Eccentric Anomaly: -104.70960455682¬∞
     Semi-major Axis: 6868328.9059404 m
     Eccentricity: 0.00072496937822618 m
-    Argument of Periapsis: 136.51435783804∞
-    Longitude of Ascending Node: 359.99391990602∞
-    Inclination: 44.988845461891∞
+    Argument of Periapsis: 136.51435783804¬∞
+    Longitude of Ascending Node: 359.99391990602¬∞
+    Inclination: 44.988845461891¬∞
 
 ## KPS ##
 The main event! The user runs KPS as follows:
@@ -349,7 +349,7 @@ E			|	Pointing Error
 ALT			|	Altitude
 B_STAR		|	Starred Ballistic Coefficient
 
-Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Donít delete any lines or set any of them to ëfalseí; just comment out the ones you donít want to see, leaving only those you do. For example, the top of the MATLAB version shows:
+Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don‚Äôt delete any lines or set any of them to ‚Äòfalse‚Äô; just comment out the ones you don‚Äôt want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
     % PLOT_R = true
     % PLOT_V = true
