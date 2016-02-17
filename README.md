@@ -63,7 +63,7 @@ Eigen is licensed under the MPL2 license: https://www.mozilla.org/en-US/MPL/2.0/
 NVIDIA CUDA has a EULA available at http://docs.nvidia.com/cuda/eula/ for end users. By using this application in CUDA mode (and the CUDA drivers necessary to run it in CUDA mode), you agree to the terms of the NVIDIA CUDA EULA available at the link above. Pursuant to the redistribution terms of this EULA, KPS prompts users to accept these terms on its first launch in CUDA mode. KPS does NOT distribute the CUDA Toolkit, only the CUDA runtime libraries as permitted by the EULA, and even then, only as a binary component of the statically compiled KPS executable.
 
 ## Obtaining the software ##
-Head to github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
+Head to https://github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
 
 ## Do I need to compile it? ##
 No. I provide precompiled binaries for those who just want to use the application and not study its code or modify it. Furthermore, they are *statically* compiled, so you don't have to download any runtime libraries at all. The executables just work, standalone, on both Windows and Linux.
