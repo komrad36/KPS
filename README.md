@@ -68,15 +68,15 @@ Head to github.com/komrad36/KPS for the latest version! Feel free to contact me 
 ## Do I need to compile it? ##
 No. I provide precompiled binaries for those who just want to use the application and not study its code or modify it. Furthermore, they are *statically* compiled, so you don't have to download any runtime libraries at all. The executables just work, standalone, on both Windows and Linux.
 
-The Windows executable is called 'KPS.exe'. I provide it statically compiled, but if you compile it yourself you may choose between a static and a dynamic build.
+The Windows executable is called 'KPS.exe'. The Linux executable is called 'KPS'.
 
-The Linux executable is called 'KPS'.
+I provide these binaries statically compiled for x64 with AVX instructions; if you compile it yourself, you may select between a static and a dynamic build and change the architecture targets.
 
 ## I want to compile it! ##
 Here are instructions for Windows and Linux:
 
 ### Instructions for Windows: ###
-You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA supports it. Open 'KPS.sln' in Visual Studio. There are 4 Build Configurations: Release, ReleaseStatic, Debug, and DebugStatic. They do exactly what it says on the box.
+You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA supports it. Open 'KPS.sln' in Visual Studio. I have prepared 4 Build Configurations for you to select from: Release, ReleaseStatic, Debug, and DebugStatic. They do exactly what it says on the box. The "ReleaseStatic" configuration is used to generate the precompiled binary.
 
 Four external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
@@ -84,7 +84,7 @@ Four external libraries are needed:
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -> VC++ Directories. You’ll need to modify both the Include Directories and Library Directories fields.
+Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -> VC++ Directories. You’ll need to modify the Include Directories for all four, and the Library Directories just for GeographicLib and CUDA.
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
@@ -98,7 +98,7 @@ The Visual Studio solution actually contains 7 projects – KPS itself and its 6
 
 Make sure KPS itself (the first project listed) is selected, and you’re ready to build.
 
-NOTE: my default Visual Studio configuration compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to <inherit from parent or project defaults>.
+NOTE: my Visual Studio configurations compile KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to <inherit from parent or project defaults>.
 
 ### Instructions for Linux: ###
 
@@ -112,7 +112,7 @@ Download Eigen and GLM (they’re header only!) and install CUDA and GeographicL
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
 
-NOTE: my default Makefile configuration compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx".
+NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx".
 
 ## Utilities ##
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
@@ -181,13 +181,13 @@ SAT_INIT_W = the satellite’s initial angular velocity in the Body frame in rad
 
 SAT_MASS = the mass of the satellite in kilograms. Typical value: 4
 
-SAT_MOI = the moment of inertia matrix of the satellite. To simplify input, pass in the 9 elements separated by comments, one row at a time. In other words, if the matrix looks like this:
+SAT_MOI = the moment of inertia matrix of the satellite. To simplify input, pass in the 9 elements separated by commas, moving along one row, then the next. In other words, if the matrix looks like this:
 
     a b c
     d e f
     g h i
 
-You would specify ‘a, b, c, d, e, f, g, h, i’. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
+You would specify ‘a, b, c, d, e, f, g, h, i’ in the configuration file. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
 
 TIME_SPAN = the number of seconds to simulate. You can abort the simulation early at any time by closing the console window or pressing CTRL+C. Typical value: 500000
 
