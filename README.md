@@ -108,7 +108,7 @@ Four external libraries are needed:
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Open the ‘Makefile’ and adjust the Includes and Library paths *if needed* (you probably won’t have to if you let everything install to its default locations).
+Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Open the ‘Makefile’ and adjust the Includes and Library paths *if needed* (you probably won’t have to if you let every library install to its default location).
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
 
