@@ -10,7 +10,9 @@
 
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/3U_dart.jpg "Satellite in Dart Configuration")
 
+- - - -
 
+![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/output.png "Sample Console Output during Execution of KPS")
 - - - -
 
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/elliptical.jpg "Decay and Circularization of Elliptical Orbit")
@@ -34,6 +36,32 @@ KPS is a free and open source, flexible, efficient software infrastructure for s
 Realtime visualization and other useful tools are dually available as MATLAB(R) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace
 and high-performance computing.
 
+## License ##
+
+KPS is licensed under the MIT License: https://opensource.org/licenses/mit-license.php
+
+Copyright (c) 2016 Kareem Omar
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+KPS makes use of four external libraries:
+- GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
+GeographicLib is also licensed under the MIT license.
+
+- glm: http://glm.g-truc.net/
+glm is also licensed under the MIT license.
+
+- Eigen: http://eigen.tuxfamily.org/
+Eigen is licensed under the MPL2 license: https://www.mozilla.org/en-US/MPL/2.0/
+
+- NVIDIA CUDA: https://developer.nvidia.com/cuda-toolkit
+(only if KPS is run in CUDA mode)
+NVIDIA CUDA has a EULA available at http://docs.nvidia.com/cuda/eula/ for end users. By using this application in CUDA mode (and the CUDA drivers necessary to run it in CUDA mode), you agree to the terms of the NVIDIA CUDA EULA available at the link above. Pursuant to the redistribution terms of this EULA, KPS prompts users to accept these terms on its first launch in CUDA mode. KPS does NOT distribute the CUDA Toolkit, only the CUDA runtime libraries as permitted by the EULA, and even then, only as a binary component of the statically compiled KPS executable.
+
 ## Obtaining the software ##
 Head to github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
 
@@ -44,7 +72,7 @@ The Windows executable is called 'KPS.exe'. I provide it statically compiled, bu
 
 The Linux executable is just called 'KPS'.
 
-## But I want to compile it! ##
+## I want to compile it! ##
 Here are instructions for Windows and Linux:
 
 ### Instructions for Windows: ###
@@ -53,19 +81,10 @@ You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA s
 Four external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
 - glm: http://glm.g-truc.net/
-
-GLM is licensed under the MIT License, and therefore, so am I:
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib and point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -    VC++ Directories. You’ll need to modify both the Include Directories and Library Directories fields.
+Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -    VC++ Directories. You’ll need to modify both the Include Directories and Library Directories fields.
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
@@ -84,15 +103,6 @@ Make sure KPS itself (the first project listed) is selected, and you’re ready 
 Four external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
 - glm: http://glm.g-truc.net/
-
-GLM is licensed under the MIT License, and therefore, so am I:
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
@@ -173,11 +183,11 @@ SAT_MOI = the moment of inertia matrix of the satellite. To simplify input, pass
     d e f
     g h i
 
-
 You would specify ‘a, b, c, d, e, f, g, h, i’. Typical value: 0.0667, 0, 0, 0, 0.0867, 0, 0, 0, 0.0333
 
 TIME_SPAN = the number of seconds to simulate. You can abort the simulation early at any time by closing the console window or pressing CTRL+C. Typical value: 500000
 
+A sample configuration file, 'config.kps', is included.
 
 
 The only other requirement to run KPS is the data for the magnetic and gravitational model specified in the configuration file, as mentioned above. Magnetic models are provided by GeographicLib in the form of a small download available here:
@@ -217,6 +227,8 @@ Up to 512 quadrilaterals are supported. Each quadrilateral consists of four copl
 There are other valid representations; what matters is that the points “flow” either clockwise or counter-clockwise such that a line drawn through them in order (and back to the first point again) would outline the polygon and not cross itself.
 
 After listing one polygon, simply list the next after it. Leaving a blank line is optional; they are ignored. List as many polygons as is required to define your satellite. The order of the *polygons* does not matter, only the order of the vertices within each polygon.
+
+A sample polygon file, 'poly.kps', is included.
 
 ## KPS_GenPoly ##
 The KPS_GenPoly tool helps generate these files by allowing the user to customize a Python or MATLAB script to generate numerical values.

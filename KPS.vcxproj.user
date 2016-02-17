@@ -29,7 +29,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseStatic|x64'">
-    <LocalDebuggerCommandArguments>poly.kps test.kps</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>poly.kps config.kps</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

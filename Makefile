@@ -26,7 +26,7 @@ static: $(CPPSOURCES) $(CUSOURCES) $(OBJECTS)
 	$(CC) -c $(INC) $(CFLAGS) $< -o $@
 
 %.o:%.cu
-	$(NVCC) -arch=$(ARCH) -O3 -ccbin $(CC) -std=c++11 -c -use_fast_math $(INC) -Xcompiler "$(NVCCFLAGS)" $< -o $@
+	$(NVCC) -arch=$(ARCH) -O3 -ccbin $(CC) -std=c++11 -c $(INC) -Xcompiler "$(NVCCFLAGS)" $< -o $@
 
 clean:
 	rm -rf *.o $(EXECUTABLE_NAME)

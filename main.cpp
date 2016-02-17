@@ -49,6 +49,8 @@ const int EXPECTED_ARGS = 2;
 #include "Propagators.h"
 #include "Satellite.h"
 
+const std::string CUDA_EULA_FILE_NAME = "CUDA_EULA_ACCEPTED";
+
 using std::chrono::system_clock;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -146,19 +148,6 @@ int main(int argc, char* argv[]) {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	// set signal handler on either OS
-#ifdef _WIN32
-	SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(CtrlHandler), ADD_HANDLER);
-#else
-	struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = CtrlHandler;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	sigaction(SIGINT, &sigIntHandler, NULL);
-	sigaction(SIGTERM, &sigIntHandler, NULL);
-	sigaction(SIGHUP, &sigIntHandler, NULL);
-#endif
-
 	printHeader();
 
 	if (argc != EXPECTED_ARGS + 1) {
@@ -239,7 +228,6 @@ int main(int argc, char* argv[]) {
 	const Earth earth(params.mag_year, *grav_model, *mag_model);
 	// --- /Initialize geoid model ---
 
-
 	// --- Initialize aero engine ---
 	std::cout << "Initializing KAero..." << std::endl;
 	KAero* kdrag;
@@ -248,6 +236,36 @@ int main(int argc, char* argv[]) {
 		std::cout << "CPU KAero ready." << std::endl;
 	}
 	else {
+		// if in CUDA mode, check if the user has accepted the CUDA EULA
+		std::ifstream eula_check(CUDA_EULA_FILE_NAME);
+		if (!eula_check.is_open()) {
+			// if not, prompt the user immediately.
+			std::cout
+				<< "\nKPS has been started in CUDA mode. CUDA is (c) NVIDIA Corporation.\n"
+				<< "Use of the CUDA runtime libraries requires that you agree to the CUDA End-User\n"
+				<< "License Agreement (EULA) available at http://docs.nvidia.com/cuda/eula/\n\n"
+				<< "Do you agree to these terms? Type YES to indicate agreement.\n" << std::endl;
+
+			std::string response;
+			std::cin >> response;
+			std::cout << std::endl;
+			
+			if (response == "YES") {
+				// if user accepts EULA, record user's choice for future runs
+				std::ofstream eula_save(CUDA_EULA_FILE_NAME);
+				eula_save.close();
+			}
+			else {
+				// if not, terminate.
+				std::cerr
+					<< "ERROR: user did not accept the NVIDIA CUDA EULA. KPS can only be run in CPU\n"
+					<< "mode unless the user accepts the NVIDIA CUDA EULA. Aborting." << std::endl;
+				return EXIT_FAILURE;
+			}
+
+		}
+		eula_check.close();
+
 		KAero_CUDA* kdrag_cuda = new KAero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
 		if (!kdrag_cuda->init(params.cuda_device)) return EXIT_FAILURE;
 		kdrag = kdrag_cuda;
@@ -256,6 +274,21 @@ int main(int argc, char* argv[]) {
 	// polygon data has been copied into aero engine and is no longer needed
 	poly.clear();
 	// --- /Initialize aero engine ---
+
+
+	// --- Set signal handler on either OS ---
+#ifdef _WIN32
+	SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(CtrlHandler), ADD_HANDLER);
+#else
+	struct sigaction sigIntHandler;
+	sigIntHandler.sa_handler = CtrlHandler;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
+	sigaction(SIGINT, &sigIntHandler, NULL);
+	sigaction(SIGTERM, &sigIntHandler, NULL);
+	sigaction(SIGHUP, &sigIntHandler, NULL);
+#endif
+	// --- /Set signal handler on either OS ---
 
 
 	// --- Initialize output engine ---

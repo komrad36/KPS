@@ -14,3 +14,4 @@ octave-workspace
 *.exp
 *.lib
 *.opensdf
+CUDA_EULA_ACCEPTED
