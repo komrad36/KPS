@@ -68,9 +68,9 @@ Head to github.com/komrad36/KPS for the latest version! Feel free to contact me 
 ## Do I need to compile it? ##
 No. I provide precompiled binaries for those who just want to use the application and not study its code or modify it. Furthermore, they are *statically* compiled, so you don't have to download any runtime libraries at all. The executables just work, standalone, on both Windows and Linux.
 
-The Windows executable is called 'KPS.exe'. I provide it statically compiled, but if you compile it yourself and do so using the dynamic configuration, it will require the CUDA runtime libraries around it to run.
+The Windows executable is called 'KPS.exe'. I provide it statically compiled, but if you compile it yourself you may choose between a static and a dynamic build.
 
-The Linux executable is just called 'KPS'.
+The Linux executable is called 'KPS'.
 
 ## I want to compile it! ##
 Here are instructions for Windows and Linux:
@@ -84,7 +84,7 @@ Four external libraries are needed:
 - Eigen: http://eigen.tuxfamily.org/
 - CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -    VC++ Directories. You’ll need to modify both the Include Directories and Library Directories fields.
+Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -> VC++ Directories. You’ll need to modify both the Include Directories and Library Directories fields.
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
@@ -98,6 +98,8 @@ The Visual Studio solution actually contains 7 projects – KPS itself and its 6
 
 Make sure KPS itself (the first project listed) is selected, and you’re ready to build.
 
+NOTE: my default Visual Studio configuration compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to <inherit from parent or project defaults>.
+
 ### Instructions for Linux: ###
 
 Four external libraries are needed:
@@ -109,6 +111,8 @@ Four external libraries are needed:
 Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Open the ‘Makefile’ and adjust the Includes and Library paths *if needed* (you probably won’t have to if you let everything install to its default locations).
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
+
+NOTE: my default Makefile configuration compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx".
 
 ## Utilities ##
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
