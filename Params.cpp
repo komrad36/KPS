@@ -387,11 +387,11 @@ void Params::printVals() {
 		<< "Magnetic Model Year: " << mag_year << std::endl
 		<< (binary_output ? "Binary" : "ASCII") << " Output" << std::endl
 		<< (realtime_output ? "Realtime" : "Non-realtime") << " Output" << std::endl
-		<< "Sat Initial Position: { " << sat_init_pos[0] << ", " << sat_init_pos[1] << ", " << sat_init_pos[2] << " }" << " m" << std::endl
-		<< "Sat Initial Attitude: { " << sat_init_q.w << ", " << sat_init_q.x << ", " << sat_init_q.y << ", " << sat_init_q.z << " }" << std::endl
-		<< "Sat Initial Velocity: { " << sat_init_v[0] << ", " << sat_init_v[1] << ", " << sat_init_v[2] << " }" << " m/s" << std::endl
-		<< "Sat Initial Ang Vel:  { " << sat_init_w[0] << ", " << sat_init_w[1] << ", " << sat_init_w[2] << " }" << " rad/s" << std::endl
-		<< "Sat Center of Mass:   { " << sat_cm[0] << ", " << sat_cm[1] << ", " << sat_cm[2] << " }" << " m" << std::endl
+		<< "Sat Initial Position: [ " << sat_init_pos[0] << ", " << sat_init_pos[1] << ", " << sat_init_pos[2] << " ]" << " m" << std::endl
+		<< "Sat Initial Attitude: [ " << sat_init_q.w << ", " << sat_init_q.x << ", " << sat_init_q.y << ", " << sat_init_q.z << " ]" << std::endl
+		<< "Sat Initial Velocity: [ " << sat_init_v[0] << ", " << sat_init_v[1] << ", " << sat_init_v[2] << " ]" << " m/s" << std::endl
+		<< "Sat Initial Ang Vel:  [ " << sat_init_w[0] << ", " << sat_init_w[1] << ", " << sat_init_w[2] << " ]" << " rad/s" << std::endl
+		<< "Sat Center of Mass:   [ " << sat_cm[0] << ", " << sat_cm[1] << ", " << sat_cm[2] << " ]" << " m" << std::endl
 		<< "Sat Mass: " << sat_mass << " kg" << std::endl
 		<< "Sat MOI: " << std::setw(MAX_DIGITS) << sat_moi[0][0] << ", " << std::setw(MAX_DIGITS) << sat_moi[0][1] << ", " << std::setw(MAX_DIGITS) << sat_moi[0][2] << std::endl
 		<< "         " << std::setw(MAX_DIGITS) << sat_moi[1][0] << ", " << std::setw(MAX_DIGITS) << sat_moi[1][1] << ", " << std::setw(MAX_DIGITS) << sat_moi[1][2] << std::endl

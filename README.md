@@ -47,12 +47,15 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-KPS makes use of four external libraries:
+KPS makes use of five external libraries:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
 GeographicLib is also licensed under the MIT license.
 
 - glm: http://glm.g-truc.net/
 glm is also licensed under the MIT license.
+
+- Clipper: http://www.angusj.com/delphi/clipper.php
+Clipper is licensed under the 2003 Boost Software License: http://www.boost.org/LICENSE_1_0.txt
 
 - Eigen: http://eigen.tuxfamily.org/
 Eigen is licensed under the MPL2 license: https://www.mozilla.org/en-US/MPL/2.0/
