@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -18,8 +18,7 @@
 // in between.
 //
 
-#ifndef US1976_H
-#define US1976_H
+#pragma once
 
 #include <cmath>
 
@@ -1032,4 +1031,3 @@ const double tbl[]{
 	3.62639090447689e-15,
 	3.61154805242336e-15 };
 
-#endif

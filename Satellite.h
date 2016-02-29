@@ -6,18 +6,17 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
 // Satellite model, including satellite orbital and attitude ODE.
 //
 
-#ifndef SATELLITE_H
-#define SATELLITE_H
+#pragma once
 
 #include "Earth.h"
-#include "KAero.h"
+#include "Aero.h"
 #include "State.h"
 #include "US1976.h"
 #include "glm_util.h"
@@ -42,10 +41,10 @@ private:
 	const mat3 MOI;
 	const mat3 inv_MOI;
 
-	KAero& kdrag;
+	Aero& kdrag;
 
 public:
-	Satellite(const Earth& earth_model, KAero& kdrag_model, const double sat_mass, const double magnetorquer_gain, const double seconds_since_epoch_at_deploy, const State& initial_state, const mat3 sat_MOI) : state(initial_state), e_state(s_to_e(state)), earth(earth_model), m(sat_mass), mag_gain(magnetorquer_gain), time_since_epoch_at_deploy(seconds_since_epoch_at_deploy), MOI(sat_MOI), inv_MOI(glm::inverse(MOI)), kdrag(kdrag_model) {}
+	Satellite(const Earth& earth_model, Aero& kdrag_model, const double sat_mass, const double magnetorquer_gain, const double seconds_since_epoch_at_deploy, const State& initial_state, const mat3 sat_MOI) : state(initial_state), e_state(s_to_e(state)), earth(earth_model), m(sat_mass), mag_gain(magnetorquer_gain), time_since_epoch_at_deploy(seconds_since_epoch_at_deploy), MOI(sat_MOI), inv_MOI(glm::inverse(MOI)), kdrag(kdrag_model) {}
 
 	bool isInValidState() const;
 
@@ -57,4 +56,4 @@ private:
 
 };
 
-#endif
+

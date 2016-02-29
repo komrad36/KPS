@@ -1,16 +1,16 @@
 /*******************************************************************
-*   KAero_CPU.cpp
+*   Aero_CPU.cpp
 *   KPS
 *
 *	Author: Kareem Omar
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
-// KAero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
+// Aero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
 // in 3-D space. When supplied with air density and velocity (in the Body frame),
 // it approximates the drag force and torque on the body by simulating
 // collisions and accumulating impulses and angular impulses per unit time.
@@ -22,7 +22,7 @@
 // such as KPS.
 //
 
-#include "KAero.h"
+#include "Aero.h"
 
 #define PAD				(0.000001)
 
@@ -30,7 +30,7 @@
 #define NONE			(-9999999.0)
 
 // internal collision routine
-void KAero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2) {
+void Aero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2) {
 	vec3 best_N, r;
 
 	vec3 sum_F_compensation{ 0.0, 0.0, 0.0 };
@@ -110,7 +110,7 @@ void KAero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2)
 
 // collide simulated particles to approximate the resulting forces and torques,
 // 'f' and 't'
-void KAero_CPU::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
+void Aero_CPU::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 
 	// zero out 'f' and 't'
 	f = t = vec3();

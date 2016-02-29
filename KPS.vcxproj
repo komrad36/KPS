@@ -35,11 +35,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clipper.hpp" />
     <ClInclude Include="Earth.h" />
     <ClInclude Include="FileInput.h" />
     <ClInclude Include="glm_util.h" />
     <ClInclude Include="ParamInput.h" />
-    <ClInclude Include="KAero.h" />
+    <ClInclude Include="Aero.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="PolyInput.h" />
@@ -51,10 +52,12 @@
     <ClInclude Include="Eigen_util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="clipper.cpp" />
     <ClCompile Include="Earth.cpp" />
     <ClCompile Include="FileInput.cpp" />
+    <ClCompile Include="Aero_Analytical.cpp" />
     <ClCompile Include="ParamInput.cpp" />
-    <ClCompile Include="KAero_CPU.cpp" />
+    <ClCompile Include="Aero_CPU.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="Params.cpp" />
@@ -63,7 +66,7 @@
     <ClCompile Include="US1976.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="KAero_CUDA.cu" />
+    <CudaCompile Include="Aero_CUDA.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E34AB1AA-2861-4394-A6EC-F26FB56AA325}</ProjectGuid>

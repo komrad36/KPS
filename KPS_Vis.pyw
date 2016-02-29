@@ -8,7 +8,7 @@
 #	kareem.omar@uah.edu
 #	https://github.com/komrad36
 #
-#	Last updated Feb 12, 2016
+#	Last updated Feb 27, 2016
 #   This application is entirely my own work.
 ####################################################################
 #
@@ -21,7 +21,7 @@
 #   and allowing user interaction.
 #
 
-PLOT_R, PLOT_V, PLOT_Q, PLOT_W, PLOT_V_B, PLOT_E, PLOT_ALT, PLOT_B_STAR = [False] * 8
+PLOT_R, PLOT_V, PLOT_Q, PLOT_Q_ORB, PLOT_W, PLOT_V_B, PLOT_E, PLOT_ALT, PLOT_B_STAR, PLOT_ORIENTATION = [False] * 10
 #####################################################################
 ##################  USER CONFIGURABLE PARAMETERS  ###################
 #####################################################################
@@ -30,18 +30,27 @@ font_size = 14
 line_width = 1.5
 maximize_plot = True
 
+# for live orientation plotter
+wireframe = False
+poly_color = 'blue'
+num_vtx = 4
+poly_file = 'poly.kps'
+face_alpha = 0.8
+axis_alpha = 0.5
+
 # Don't change these to False; simply comment
 # out the ones you don't want.
 
 #PLOT_R = True
 #PLOT_V = True
 #PLOT_Q = True
+#PLOT_Q_ORB = True
 #PLOT_ALT = True
 #PLOT_B_STAR = True
-PLOT_W = True
-PLOT_V_B = True
-PLOT_E = True
-
+#PLOT_W = True
+#PLOT_V_B = True
+#PLOT_E = True
+PLOT_ORIENTATION = True
 
 #####################################################################
 #####################################################################
@@ -56,6 +65,17 @@ from math import ceil
 import matplotlib.pyplot as plt
 import numpy as np
 from tkinter import TclError
+
+if PLOT_R or PLOT_ORIENTATION:
+    from mpl_toolkits.mplot3d import Axes3D
+
+if PLOT_ORIENTATION:
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+def cross(a, b):
+    return [a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0]]
 
 # maximize plots if desired, on any backend
 def maximizePlot():
@@ -78,21 +98,36 @@ def maximizePlot():
         return False
 
 def initPlots():
-    global r_plt, v_plt, v_b_plt, q_plt, w_plt, e_plt, alt_plt, b_star_plt, r_0, q_0, q_1, q_2, q_3, w_x, w_y, w_z, v_x, v_y, v_z, v_b_x, v_b_y, v_b_z, e_0, alt_0, b_star_0, r_canvas, w_canvas, v_canvas, v_b_canvas, e_canvas, q_canvas, alt_canvas, b_star_canvas
+    global vtx, r_plt, v_plt, v_b_plt, q_plt, q_orb_plt, w_plt, e_plt, alt_plt, b_star_plt, or_plt, or_0, or_1, or_2, or_3, r_0, r_1, q_0, q_1, q_2, q_3, q_orb_0, q_orb_1, q_orb_2, q_orb_3, w_x, w_y, w_z, v_x, v_y, v_z, v_b_x, v_b_y, v_b_z, e_0, alt_0, b_star_0, w_canvas, v_canvas, v_b_canvas, e_canvas, q_canvas, q_orb_canvas, alt_canvas, b_star_canvas
     cur_plot = 1
 
     if PLOT_R:
         r_plt = fig.add_subplot(num_plots, 1, cur_plot, aspect='equal', projection='3d')
         cur_plot += 1
         r_plt.set_title('Position', fontweight="bold")
-        r_plt.xaxis.set_ticklabels([])
-        r_plt.yaxis.set_ticklabels([])
-        r_plt.zaxis.set_ticklabels([])
-        r_plt.set_xlabel('x')
-        r_plt.set_ylabel('y')
-        r_plt.set_zlabel('z')
+        r_plt.set_xlabel(r'$x_{ECI}  [m]$')
+        r_plt.set_ylabel(r'$y_{ECI}  [m]$')
+        r_plt.set_zlabel(r'$z_{ECI}  [m]$')
         r_0 = r_plt.plot([], [], [], color='g', linewidth=line_width)[0]
-        r_plt.plot([0], [0], [0], 'bo', markersize=40, alpha=0.90)[0]
+        r_1 = r_plt.plot([0], [0], [0], 'bo', markersize=40, alpha=0.90)[0]
+
+    if PLOT_ORIENTATION:
+        or_plt = fig.add_subplot(num_plots, 1, cur_plot, aspect='equal', projection='3d')
+        cur_plot += 1
+        or_plt.set_title('Live Orientation', fontweight="bold")
+        or_plt.set_xlabel(r'$x_{orbital}  [m]$')
+        or_plt.set_ylabel(r'$y_{orbital}  [m]$')
+        or_plt.set_zlabel(r'$z_{orbital}  [m]$')
+        if wireframe:
+            for i in range(num_poly):
+                or_0.append(or_plt.plot([], [], [], color=poly_color, linewidth=line_width)[0])
+        else:
+            or_0 = Poly3DCollection(or_0, alpha=face_alpha, edgecolor='k', color=poly_color)
+            or_plt.add_collection3d(or_0)
+
+        or_1 = or_plt.plot([], [], [], color='k', alpha=axis_alpha)[0]
+        or_2 = or_plt.plot([], [], [], color='k', alpha=axis_alpha)[0]
+        or_3 = or_plt.plot([], [], [], color='k', alpha=axis_alpha)[0]
 
     if PLOT_V:
         v_plt = fig.add_subplot(num_plots, 1, cur_plot)
@@ -107,13 +142,24 @@ def initPlots():
     if PLOT_Q:
         q_plt = fig.add_subplot(num_plots, 1, cur_plot)
         cur_plot += 1
-        q_plt.set_title('Quaternion', fontweight="bold")
+        q_plt.set_title('Quaternion to ECI Frame', fontweight="bold")
         q_plt.set_ylabel('Component')
         q_0 = q_plt.plot([], [], color='r', label='$q_0$', linewidth=line_width)[0]
         q_1 = q_plt.plot([], [], color='g', label='$q_1$', linewidth=line_width)[0]
         q_2 = q_plt.plot([], [], color='b', label='$q_2$', linewidth=line_width)[0]
         q_3 = q_plt.plot([], [], color='k', label='$q_3$', linewidth=line_width)[0]
         q_plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+    if PLOT_Q_ORB:
+        q_orb_plt = fig.add_subplot(num_plots, 1, cur_plot)
+        cur_plot += 1
+        q_orb_plt.set_title('Quaternion to Orbital Frame', fontweight="bold")
+        q_orb_plt.set_ylabel('Component')
+        q_orb_0 = q_orb_plt.plot([], [], color='r', label='$q_0$', linewidth=line_width)[0]
+        q_orb_1 = q_orb_plt.plot([], [], color='g', label='$q_1$', linewidth=line_width)[0]
+        q_orb_2 = q_orb_plt.plot([], [], color='b', label='$q_2$', linewidth=line_width)[0]
+        q_orb_3 = q_orb_plt.plot([], [], color='k', label='$q_3$', linewidth=line_width)[0]
+        q_orb_plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     if PLOT_W:
         w_plt = fig.add_subplot(num_plots, 1, cur_plot)
@@ -160,17 +206,19 @@ def initPlots():
         b_star_0 = b_star_plt.plot([], [], color='b', label='$B^*$', linewidth=line_width)[0]
         b_star_plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-    if not (PLOT_R and num_plots == 1):
+    if (PLOT_R and num_plots == 1) or (PLOT_ORIENTATION and num_plots == 1) or (PLOT_R and PLOT_ORIENTATION and num_plots == 2):
+        fig.tight_layout()
+    else:
         plt.xlabel('Time [s]', fontsize=1.4*font_size)
 
     fig.canvas.draw()
 
     # store bbox in order to blit and restore later (for speed)
-    if PLOT_R:
-        r_canvas = fig.canvas.copy_from_bbox(r_plt.bbox)
-
     if PLOT_Q:
         q_canvas = fig.canvas.copy_from_bbox(q_plt.bbox)
+
+    if PLOT_Q_ORB:
+        q_orb_canvas = fig.canvas.copy_from_bbox(q_orb_plt.bbox)
 
     if PLOT_W:
         w_canvas = fig.canvas.copy_from_bbox(w_plt.bbox)
@@ -190,7 +238,7 @@ def initPlots():
     if PLOT_B_STAR:
         b_star_canvas = fig.canvas.copy_from_bbox(b_star_plt.bbox)
 
-num_plots = PLOT_R + PLOT_V + PLOT_Q + PLOT_W + PLOT_V_B + PLOT_E + PLOT_ALT + PLOT_B_STAR
+num_plots = PLOT_R + PLOT_V + PLOT_Q + PLOT_Q_ORB + PLOT_ORIENTATION + PLOT_W + PLOT_V_B + PLOT_E + PLOT_ALT + PLOT_B_STAR
 
 # read all data available so far
 
@@ -203,14 +251,13 @@ except:
 t = np.fromfile(f_t)[:-1]
 
 if PLOT_R:
-    from mpl_toolkits.mplot3d import Axes3D
     try:
         f_r = open('r.bin', 'rb')
     except:
         print('ERROR: failed to open file. Aborting.')
         sys.exit(-1)
     r = np.fromfile(f_r)
-    r = r[:3*ceil(r.size//3) - 2]
+    r = r[:3*ceil(r.size/3) - 2]
 
 if PLOT_V:
     try:
@@ -219,7 +266,7 @@ if PLOT_V:
         print('ERROR: failed to open file. Aborting.')
         sys.exit(-1)
     v = np.fromfile(f_v)
-    v = v[:3*ceil(v.size//3) - 2]
+    v = v[:3*ceil(v.size/3) - 2]
 
 if PLOT_V_B:
     try:
@@ -228,7 +275,7 @@ if PLOT_V_B:
         print('ERROR: failed to open file. Aborting.')
         sys.exit(-1)
     v_b = np.fromfile(f_v_b)
-    v_b = v_b[:3*ceil(len(v_b)//3) - 2]
+    v_b = v_b[:3*ceil(len(v_b)/3) - 2]
 
 if PLOT_E:
     try:
@@ -261,7 +308,16 @@ if PLOT_Q:
         print('ERROR: failed to open file. Aborting.')
         sys.exit(-1)
     q = np.fromfile(f_q)
-    q = q[:3*ceil(q.size//3) - 2]
+    q = q[:4*ceil(q.size/4) - 3]
+
+if PLOT_Q_ORB or PLOT_ORIENTATION:
+    try:
+        f_q_orb = open('q_orb.bin', 'rb')
+    except:
+        print('ERROR: failed to open file. Aborting.')
+        sys.exit(-1)
+    q_orb = np.fromfile(f_q_orb)
+    q_orb = q_orb[:4*ceil(q_orb.size/4) - 3]
 
 if PLOT_W:
     try:
@@ -270,13 +326,24 @@ if PLOT_W:
         print('ERROR: failed to open file. Aborting.')
         sys.exit(-1)
     w = np.fromfile(f_w)
-    w = w[:3*ceil(w.size//3) - 2]
+    w = w[:3*ceil(w.size/3) - 2]
+
+if PLOT_ORIENTATION:
+    try:
+        f_orb = open(poly_file)
+    except:
+        print('ERROR: failed to open polygon file. Aborting.')
+        sys.exit(-1)
+    vtx = np.array([[float(x) for x in line.rstrip('\n').split(', ')] for line in f_orb if len(line) > 4 and line[0] != '#'])
+    num_poly = len(vtx) // num_vtx;
+    or_0 = []
+    f_orb.close()
 
 plt.rcParams.update({'font.size': font_size})
 
 fig = plt.figure('KPS - REALTIME')
 
-r_plt, v_plt, v_b_plt, q_plt, w_plt, e_plt, alt_plt, b_star_plt = [None] * 8
+r_plt, v_plt, v_b_plt, q_plt, q_orb_plt, w_plt, e_plt, alt_plt, b_star_plt, or_plt = [None] * 10
 
 if maximize_plot:
     maximizePlot()
@@ -330,6 +397,9 @@ while True:
                 if PLOT_Q:
                     q_plt.relim()
                     q_plt.autoscale_view(True, True, False)
+                if PLOT_Q_ORB:
+                    q_orb_plt.relim()
+                    q_orb_plt.autoscale_view(True, True, False)
                 if PLOT_E:
                     e_plt.relim()
                     e_plt.autoscale_view(True, True, False)
@@ -342,6 +412,11 @@ while True:
                 plt.show()
         t = np.append(t, t_in)
 
+        if PLOT_R:
+            f_r.seek(8*r.size)
+            r_in = np.fromfile(f_r)
+            r = np.append(r, r_in[:3*ceil(r_in.size/3) - 2])
+
         if PLOT_V:
             fig.canvas.restore_region(v_canvas)
             v_plt.draw_artist(v_x)
@@ -350,7 +425,7 @@ while True:
             fig.canvas.blit(v_plt.bbox)
             f_v.seek(8*v.size)
             v_in = np.fromfile(f_v)
-            v = np.append(v, v_in[:3*ceil(v_in.size//3) - 2])
+            v = np.append(v, v_in[:3*ceil(v_in.size/3) - 2])
 
         if PLOT_V_B:
             fig.canvas.restore_region(v_b_canvas)
@@ -360,7 +435,7 @@ while True:
             fig.canvas.blit(v_b_plt.bbox)
             f_v_b.seek(8*len(v_b))
             v_b_in = np.fromfile(f_v_b)
-            v_b = np.append(v_b, v_b_in[:3*ceil(v_b_in.size//3) - 2])
+            v_b = np.append(v_b, v_b_in[:3*ceil(v_b_in.size/3) - 2])
 
         if PLOT_E:
             fig.canvas.restore_region(e_canvas)
@@ -391,7 +466,7 @@ while True:
             fig.canvas.blit(w_plt.bbox)
             f_w.seek(8*w.size)
             w_in = np.fromfile(f_w)
-            w = np.append(w, w_in[:3*ceil(w_in.size//3) - 2])
+            w = np.append(w, w_in[:3*ceil(w_in.size/3) - 2])
 
         if PLOT_Q:
             fig.canvas.restore_region(q_canvas)
@@ -402,7 +477,20 @@ while True:
             fig.canvas.blit(q_plt.bbox)
             f_q.seek(8*q.size)
             q_in = np.fromfile(f_q)
-            q = np.append(q, q_in[:4*ceil(q_in.size//4) - 3])
+            q = np.append(q, q_in[:4*ceil(q_in.size/4) - 3])
+
+        if PLOT_Q_ORB:
+            fig.canvas.restore_region(q_orb_canvas)
+            q_orb_plt.draw_artist(q_orb_0)
+            q_orb_plt.draw_artist(q_orb_1)
+            q_orb_plt.draw_artist(q_orb_2)
+            q_orb_plt.draw_artist(q_orb_3)
+            fig.canvas.blit(q_orb_plt.bbox)
+
+        if PLOT_Q_ORB or PLOT_ORIENTATION:
+            f_q_orb.seek(8*q_orb.size)
+            q_orb_in = np.fromfile(f_q_orb)
+            q_orb = np.append(q_orb, q_orb_in[:4*ceil(q_orb_in.size/4) - 3])
 
         # determine length of shortest file
         # (all files will be trimmed to this length for plotting)
@@ -416,6 +504,9 @@ while True:
         if PLOT_Q:
             if q.size//4 < length:
                 length = q.size//4;
+        if PLOT_Q_ORB or PLOT_ORIENTATION:
+            if q_orb.size//4 < length:
+                length = q_orb.size//4;
         if PLOT_W:
             if w.size//3 < length:
                 length = w.size//3;
@@ -432,15 +523,76 @@ while True:
 
         if PLOT_R:
             r = r[:3*length]
-            r_0.remove()
-            del r_0
-            r_0 = r_plt.plot(r[::3], r[1::3], r[2::3], color='g', linewidth=line_width)[0]
-            r_plt.plot([0], [0], [0], 'bo', markersize=40, alpha=0.90)[0]
-            f_r.seek(8*r.size)
-            r_in = np.fromfile(f_r)
-            r = np.append(r, r_in[:3*ceil(r_in.size//3) - 2])
+            r_0.set_xdata(r[::3])
+            r_0.set_ydata(r[1::3])
+            r_0.set_3d_properties(r[2::3])
 
-            # 3-D is buggy and requires redraw every frame
+            x_min = min(r[::3])
+            x_max = max(r[::3])
+            x_center = 0.5 * (x_max + x_min)
+
+            y_min = min(r[1::3])
+            y_max = max(r[1::3])
+            y_center = 0.5 * (y_max + y_min)
+
+            z_min = min(r[2::3])
+            z_max = max(r[2::3])
+            z_center = 0.5 * (z_max + z_min)
+
+            total_min = min([x_min, y_min, z_min])
+            total_max = max([x_max, y_max, z_max])
+            half_span = 0.5 * (total_max - total_min)
+
+            r_plt.set_xlim3d(x_center - half_span, x_center + half_span)
+            r_plt.set_ylim3d(y_center - half_span, y_center + half_span)
+            r_plt.set_zlim3d(z_center - half_span, z_center + half_span)
+
+            need_redraw = True
+
+        if PLOT_ORIENTATION:      
+            q_vec = q_orb[-3:]
+            vtx_rot = [v + cross(2*q_vec,cross(q_vec, v)+q_orb[-4]*v) for v in vtx]
+
+            x, y, z = list(map(list, zip(*vtx_rot)))
+
+            x_min = min(x)
+            x_max = max(x)
+            x_center = 0.5 * (x_max + x_min)
+
+            y_min = min(y)
+            y_max = max(y)
+            y_center = 0.5 * (y_max + y_min)
+
+            z_min = min(z)
+            z_max = max(z)
+            z_center = 0.5 * (z_max + z_min)
+
+            total_min = min([x_min, y_min, z_min])
+            total_max = max([x_max, y_max, z_max])
+            half_span = 0.5 * (total_max - total_min)
+
+            or_plt.set_xlim3d(x_center - half_span, x_center + half_span)
+            or_plt.set_ylim3d(y_center - half_span, y_center + half_span)
+            or_plt.set_zlim3d(z_center - half_span, z_center + half_span)
+
+            if wireframe:
+                for i in range(0, len(z), num_vtx):
+                    or_0[i//num_vtx].set_xdata(x[i:i + num_vtx] + [x[i]])
+                    or_0[i//num_vtx].set_ydata(y[i:i + num_vtx] + [y[i]])
+                    or_0[i//num_vtx].set_3d_properties(z[i:i + num_vtx] + [z[i]])
+            else:
+                or_0.set_verts([vtx_rot[i:i + num_vtx] for i in range(0, len(vtx_rot), num_vtx)])
+
+            or_1.set_xdata([x_min, x_max])
+            or_1.set_ydata([0, 0])
+            or_1.set_3d_properties([0, 0])
+            or_2.set_xdata([0, 0])
+            or_2.set_ydata([y_min, y_max])
+            or_2.set_3d_properties([0, 0])
+            or_3.set_xdata([0, 0])
+            or_3.set_ydata([0, 0])
+            or_3.set_3d_properties([z_min, z_max])
+
             need_redraw = True
 
         if PLOT_V:
@@ -464,6 +616,18 @@ while True:
             q_plt.relim()
             q_plt.autoscale_view()
             if (q_plt.get_xlim(), q_plt.get_ylim()) != old_lim:
+                need_redraw = True
+
+        if PLOT_Q_ORB:
+            q_orb = q_orb[:4*length]
+            q_orb_0.set_data(t, q_orb[::4])
+            q_orb_1.set_data(t, q_orb[1::4])
+            q_orb_2.set_data(t, q_orb[2::4])
+            q_orb_3.set_data(t, q_orb[3::4])
+            old_lim = q_orb_plt.get_xlim(), q_orb_plt.get_ylim()
+            q_orb_plt.relim()
+            q_orb_plt.autoscale_view()
+            if (q_orb_plt.get_xlim(), q_orb_plt.get_ylim()) != old_lim:
                 need_redraw = True
 
         if PLOT_W:

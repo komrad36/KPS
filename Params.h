@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -14,8 +14,7 @@
 // valid parameters, including performing validity checks.
 //
 
-#ifndef PARAMS_H
-#define PARAMS_H
+#pragma once
 
 #include <algorithm>
 #include <iostream>
@@ -24,7 +23,7 @@
 #include <unordered_map>
 
 #include "Earth.h"
-#include "KAero.h"
+#include "Aero.h"
 #include "Propagators.h"
 #include "Output.h"
 #include "glm_util.h"
@@ -48,7 +47,7 @@ public:
 	static const int SAT_INIT_W_ELEMENTS = 3;
 	
 	double mag_gain;
-	int cuda_device;
+	int aero_mode;
 	double time_since_epoch_at_deploy;
 	std::string grav_model;
 	Propagator<ODE_VEC_N>* propagator;
@@ -93,4 +92,4 @@ private:
 
 };
 
-#endif
+

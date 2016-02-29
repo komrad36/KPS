@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -14,8 +14,7 @@
 // vectors, polygons, and matrices using the GLM library
 //
 
-#ifndef GLM_UTIL_H
-#define GLM_UTIL_H
+#pragma once
 
 #define NUM_VTX (4)
 
@@ -39,6 +38,8 @@ const size_t ODE_VEC_N = 13;
 const int AUTO_SELECT = -1;
 
 const int USE_CPU = -2;
+
+const int ANALYTICAL = -3;
 
 const double TESLA_PER_nT = 1e-9;
 
@@ -64,4 +65,3 @@ inline double deg2rad(const double deg) { return deg * 0.0174532925199432957; }
 // rad * 180 / PI
 inline double rad2deg(const double rad) { return rad * 57.295779513082320876; }
 
-#endif

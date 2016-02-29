@@ -6,15 +6,14 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
 // Parses a KPS parameters file into a map of parameter names and values.
 //
 
-#ifndef PARAM_INPUT_H
-#define PARAM_INPUT_H
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -29,4 +28,4 @@
 // DEFAULT PARAMETER: comment_char = '#'
 bool parseParams(key_val_map& params, const std::string& filename, const char delim_char = '=', const char comment_char = '#');
 
-#endif
+

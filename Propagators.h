@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -58,8 +58,7 @@
 // Contact me if interested in this solver for other purposes.
 //
 
-#ifndef PROPAGATORS_H
-#define PROPAGATORS_H
+#pragma once
 
 #include <array>
 #include <algorithm>
@@ -539,4 +538,4 @@ public:
 	}
 };
 
-#endif
+

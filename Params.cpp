@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -23,8 +23,8 @@ const std::vector<std::string> Params::grav_names{ "POINT", "WGS84", "EGM84", "E
 const std::vector<std::string> Params::mag_names{ "WMM2010", "WMM2015", "IGRF11", "IGRF12", "EMM2010", "EMM2015" };
 
 // names of all required parameters
-const std::vector<std::string> Params::param_names{ "MAG_GAIN", "CUDA_DEVICE", "TIME_SINCE_EPOCH_AT_DEPLOY", "GRAV_MODEL", "PROPAGATOR",
-													"ABS_TOL", "REL_TOL", "KAERO_PITCH", "MAX_STEP_SIZE", "MAG_MODEL", "MAG_YEAR",
+const std::vector<std::string> Params::param_names{ "MAG_GAIN", "AERO_MODE", "TIME_SINCE_EPOCH_AT_DEPLOY", "GRAV_MODEL", "PROPAGATOR",
+													"ABS_TOL", "REL_TOL", "AERO_PITCH", "MAX_STEP_SIZE", "MAG_MODEL", "MAG_YEAR",
 													"BINARY_OUTPUT", "REALTIME_OUTPUT", "SAT_CM", "SAT_INIT_POS", "SAT_INIT_Q",
 													"SAT_INIT_V", "SAT_INIT_W", "SAT_MASS", "SAT_MOI", "TIME_SPAN" };
 
@@ -64,7 +64,7 @@ bool Params::assign(const key_val_map& raw_params) {
 
 
 	// --- Aerodynamics Simulation Linear Pitch ---
-	if ((pair = raw_params.find("KAERO_PITCH")) != raw_params.end()) {
+	if ((pair = raw_params.find("AERO_PITCH")) != raw_params.end()) {
 		pitch = atof(pair->second.c_str());
 	}
 	else {
@@ -75,17 +75,21 @@ bool Params::assign(const key_val_map& raw_params) {
 
 
 	// --- CUDA Device ID ---
-	if ((pair = raw_params.find("CUDA_DEVICE")) != raw_params.end()) {
-		if (pair->second == "AUTO") {
-			cuda_device = AUTO_SELECT;
+	if ((pair = raw_params.find("AERO_MODE")) != raw_params.end()) {
+		if (pair->second == "CUDA_AUTO") {
+			aero_mode = AUTO_SELECT;
 		}
-		else if (pair->second == "NONE") {
-			cuda_device = USE_CPU;
+		else if (pair->second == "CPU") {
+			aero_mode = USE_CPU;
 		}
-		else if ((cuda_device = atoi(pair->second.c_str())) < 0) {
-			std::cerr << std::endl << "ERROR: for CUDA_DEVICE, specify a valid CUDA device ID," << std::endl
-				<< "or AUTO to auto-select the device with the highest GFLOPS," << std::endl
-				<< "or NONE to disable CUDA and use the CPU exclusively." << std::endl;
+		else if (pair->second == "ANALYTICAL") {
+			aero_mode = ANALYTICAL;
+		}
+		else if ((aero_mode = atoi(pair->second.c_str())) < 0) {
+			std::cerr << std::endl << "ERROR: for AERO_MODE, specify a valid CUDA device ID for grid mode," << std::endl
+				<< "or CUDA_AUTO to auto-select the device with the highest GFLOPS for grid mode," << std::endl
+				<< "or CPU to disable CUDA and use the CPU exclusively for grid mode," << std::endl
+				<< "or ANALYTICAL to analytically perform frontal area computation." << std::endl;
 			return false;
 		}
 	}
@@ -371,14 +375,14 @@ void Params::printVals() {
 	std::cout.precision(STD_DIGITS);
 	std::cout
 		<< "Magnetorque Gain: " << mag_gain << std::endl
-		<< (cuda_device == USE_CPU ? "CPU Mode" : "CUDA Mode - Device ID: " + (cuda_device == -1 ? "AUTO" : std::to_string(cuda_device))) << std::endl
+		<< "Aero Mode: " << (aero_mode == USE_CPU ? "CPU" : aero_mode == ANALYTICAL ? "Analytical" : "CUDA - Device ID: " + (aero_mode == -1 ? "AUTO" : std::to_string(aero_mode))) << std::endl
 		<< "Time Since Epoch at Deploy: " << time_since_epoch_at_deploy << " s" << std::endl
 		<< "Gravitational Model: " << grav_model << std::endl
 		<< "Propagator: " << propagator_name << std::endl
 		<< "Absolute Tolerance: " << abs_tol << std::endl
 		<< "Relative Tolerance: " << rel_tol << std::endl
 		<< "Max Step Size: " << max_step_size << " s" << std::endl
-		<< "KAero Linear Pitch: " << pitch << " m" << std::endl
+		<< "Aero Linear Pitch: " << pitch << " m" << std::endl
 		<< "Magnetic Model: " << mag_model << std::endl
 		<< "Magnetic Model Year: " << mag_year << std::endl
 		<< (binary_output ? "Binary" : "ASCII") << " Output" << std::endl

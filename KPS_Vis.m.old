@@ -20,30 +20,16 @@
 %
 
 function KPS_Vis
- global NUM_PLOTS AXIS_LINE_WIDTH FONT_SIZE LINE_WIDTH t r v v_b p_e q q_orb w alt b_star PLOT_R PLOT_V PLOT_Q PLOT_Q_ORB PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR PLOT_ORIENTATION v_plt q_plt q_orb_plt w_plt v_b_plt e_plt alt_plt b_star_plt P num_vtx wireframe color_if_not_gradient gradient_if_not_wireframe face_alpha at_origin_axis_line_widths
+global NUM_PLOTS FONT_SIZE LINE_WIDTH t r v v_b p_e q w alt b_star PLOT_R PLOT_V PLOT_Q PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR v_plt q_plt w_plt v_b_plt e_plt alt_plt b_star_plt
 initBools
 %% User configurables
 
 FONT_SIZE = 16;
 LEGEND_FONT_SIZE = 14;
 LINE_WIDTH = 1.2;
-AXIS_LINE_WIDTH = 2;
 MAXIMIZE_PLOT = true;
 
-% for live orientation plotter
-wireframe = false;
-at_origin_axis_line_widths = 1;
-gradient_if_not_wireframe = true;
-color_if_not_gradient = 'blue';
-num_vtx = 4;
-poly_file = 'poly.kps';
-
-% for MATLAB only, won't work in Octave
-face_alpha = 0.8;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 if exist('OCTAVE_VERSION', 'builtin')
-  face_alpha = 1.0;
   LEGEND_FONT_SIZE = 8;
   graphics_toolkit('fltk')
 end %if
@@ -54,18 +40,17 @@ end %if
 % PLOT_R = true;
 % PLOT_V = true;
 % PLOT_Q = true;
-% PLOT_Q_ORB = true;
 % PLOT_ALT = true;
 % PLOT_B_STAR = true;
-% PLOT_W = true;
-% PLOT_V_B = true;
-% PLOT_E = true;
-PLOT_ORIENTATION = true;
+PLOT_W = true;
+PLOT_V_B = true;
+PLOT_E = true;
+
 
 
 %% Execution
 
-NUM_PLOTS = PLOT_R + PLOT_V + PLOT_Q + PLOT_Q_ORB + PLOT_W + PLOT_V_B + PLOT_E + PLOT_ALT + PLOT_B_STAR + PLOT_ORIENTATION;
+NUM_PLOTS = PLOT_R + PLOT_V + PLOT_Q + PLOT_W + PLOT_V_B + PLOT_E + PLOT_ALT + PLOT_B_STAR;
 
 f_t = fopen('t.bin', 'r');
 if (f_t == -1)
@@ -138,15 +123,6 @@ if PLOT_Q
     q = q(1:4*ceil(numel(q)/4) - 4);
 end %if
 
-if PLOT_Q_ORB || PLOT_ORIENTATION
-    f_q_orb = fopen('q_orb.bin', 'r');
-    if (f_q_orb == -1)
-        error('Failed to open file.')
-    end %if
-    q_orb = fread(f_q_orb, Inf, 'double');
-    q_orb = q_orb(1:4*ceil(numel(q_orb)/4) - 4);
-end %if
-
 if PLOT_W
     f_w = fopen('w.bin', 'r');
     if (f_w == -1)
@@ -154,35 +130,6 @@ if PLOT_W
     end %if
     w = fread(f_w, Inf, 'double');
     w = w(1:3*ceil(numel(w)/3) - 3);
-end %if
-
-if PLOT_ORIENTATION
-    fid = fopen(poly_file, 'r');
-    if fid == -1
-       error('Unable to open polygon file. Aborting.')  
-    end %if
-    
-    % load polygons
-    % this could be textscan() in MATLAB but Octave
-    % doesn't yet support '%[]' (skip characters) arguments
-    % so it's handrolled for now
-    P = zeros(3, 0);
-    i = 1;
-    while true
-      ln = fgetl(fid);
-      if ln == -1, break, end
-
-      if numel(ln) == 0 || ln(1) == '#', continue, end
-      elems = str2double(strsplit(ln, ','));
-      if numel(elems) ~= 3
-        error('Error parsing file!')
-      end
-      P(:, i) = elems;
-      i = i + 1;
-    end %while
-
-    fclose(fid);
-    clear fid
 end %if
 
 h = figure('Name', 'KPS - REALTIME', 'NumberTitle', 'off'); clf
@@ -194,7 +141,6 @@ initPlots
 updatePlots
 
 if PLOT_Q, l=legend(q_plt, 'q_0', 'q_1', 'q_2', 'q_3', 'location', 'eastoutside'); set(l, 'FontSize', LEGEND_FONT_SIZE), end
-if PLOT_Q_ORB, l=legend(q_orb_plt, 'q_0', 'q_1', 'q_2', 'q_3', 'location', 'eastoutside'); set(l, 'FontSize', LEGEND_FONT_SIZE), end
 if PLOT_W, l=legend(w_plt, '\omega_x', '\omega_y', '\omega_z', 'location', 'eastoutside'); set(l, 'FontSize', LEGEND_FONT_SIZE), end
 if PLOT_V, l=legend(v_plt, 'v_x', 'v_y', 'v_z', 'location', 'eastoutside'); set(l, 'FontSize', LEGEND_FONT_SIZE), end
 if PLOT_V_B, l=legend(v_b_plt, 'v_x', 'v_y', 'v_z', 'location', 'eastoutside'); set(l, 'FontSize', LEGEND_FONT_SIZE), end
@@ -274,13 +220,6 @@ while true
         q = [q; q_in];
     end %if
     
-    if PLOT_Q_ORB || PLOT_ORIENTATION
-        fseek(f_q_orb, 8*numel(q_orb), 'bof');
-        q_orb_in = fread(f_q_orb, Inf, 'double');
-        q_orb_in(4*ceil(numel(q_orb_in)/4) - 3:end) = [];
-        q_orb = [q_orb; q_orb_in];
-    end %if
-    
     if PLOT_W
         fseek(f_w, 8*numel(w), 'bof');
         w_in = fread(f_w, Inf, 'double');
@@ -296,7 +235,7 @@ fclose('all');
 end %function
 
 function initPlots
-global NUM_PLOTS FONT_SIZE AXIS_LINE_WIDTH LINE_WIDTH PLOT_R PLOT_V PLOT_Q PLOT_Q_ORB PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR PLOT_ORIENTATION r_plt v_plt q_plt q_orb_plt w_plt v_b_plt e_plt alt_plt b_star_plt or_plt
+global NUM_PLOTS FONT_SIZE LINE_WIDTH PLOT_R PLOT_V PLOT_Q PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR r_plt v_plt q_plt w_plt v_b_plt e_plt alt_plt b_star_plt
 cur_plot = 1;
 
 if PLOT_R
@@ -304,21 +243,7 @@ if PLOT_R
     cur_plot = cur_plot + 1;
     axis equal
     title('Position', 'FontSize', FONT_SIZE)
-    xlabel('x_{ECI}')
-    ylabel('y_{ECI}')
-    zlabel('z_{ECI}')
-    set(gca, 'FontSize', FONT_SIZE, 'LineWidth', AXIS_LINE_WIDTH);
-end %if
-
-if PLOT_ORIENTATION
-    or_plt = subplot(NUM_PLOTS, 1, cur_plot); hold on
-    cur_plot = cur_plot + 1;
-    axis equal
-    title('Live Orientation', 'FontSize', FONT_SIZE)
-    xlabel('x_{orbital}')
-    ylabel('y_{orbital}')
-    zlabel('z_{orbital}')
-    set(gca, 'FontSize', FONT_SIZE, 'LineWidth', AXIS_LINE_WIDTH);
+    set(gca, 'FontSize', FONT_SIZE, 'LineWidth', LINE_WIDTH);
 end %if
 
 if PLOT_V
@@ -332,15 +257,7 @@ end %if
 if PLOT_Q
     q_plt = subplot(NUM_PLOTS, 1, cur_plot); hold on
     cur_plot = cur_plot + 1;
-    title('Quaternion to ECI Frame', 'FontSize', FONT_SIZE)
-    ylabel('Component', 'FontSize', FONT_SIZE)
-    set(gca, 'FontSize', FONT_SIZE, 'LineWidth', LINE_WIDTH);
-end %if
-
-if PLOT_Q_ORB
-    q_orb_plt = subplot(NUM_PLOTS, 1, cur_plot); hold on
-    cur_plot = cur_plot + 1;
-    title('Quaternion to Orbital Frame', 'FontSize', FONT_SIZE)
+    title('Quaternion', 'FontSize', FONT_SIZE)
     ylabel('Component', 'FontSize', FONT_SIZE)
     set(gca, 'FontSize', FONT_SIZE, 'LineWidth', LINE_WIDTH);
 end %if
@@ -385,13 +302,13 @@ if PLOT_B_STAR
     set(gca, 'FontSize', FONT_SIZE, 'LineWidth', LINE_WIDTH);
 end %if
     
-if ~((PLOT_R && NUM_PLOTS == 1) || (PLOT_ORIENTATION && NUM_PLOTS == 1) || (PLOT_R && PLOT_ORIENTATION && NUM_PLOTS == 2))
+if ~(PLOT_R && NUM_PLOTS == 1)
     xlabel('Time [s]', 'FontSize', FONT_SIZE)
 end %if
 end %function
 
 function updatePlots
-global LINE_WIDTH t r v v_b p_e q q_orb w alt b_star PLOT_R PLOT_V PLOT_Q PLOT_Q_ORB PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR PLOT_ORIENTATION r_plt v_plt q_plt q_orb_plt w_plt v_b_plt e_plt alt_plt b_star_plt or_plt P num_vtx wireframe color_if_not_gradient gradient_if_not_wireframe face_alpha at_origin_axis_line_widths
+global LINE_WIDTH t r v v_b p_e q w alt b_star PLOT_R PLOT_V PLOT_Q PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR r_plt v_plt q_plt w_plt v_b_plt e_plt alt_plt b_star_plt
 
 % determine length of shortest file
 % (all files will be trimmed to this length for plotting)
@@ -404,9 +321,6 @@ if PLOT_V
 end %if
 if PLOT_Q
     if numel(q)/4 < len, len = numel(q)/4; end
-end %if
-if PLOT_Q_ORB || PLOT_ORIENTATION
-    if numel(q_orb)/4 < len, len = numel(q_orb)/4; end
 end %if
 if PLOT_W
     if numel(w)/3 < len, len = numel(w)/3; end
@@ -440,42 +354,6 @@ if PLOT_R
     plot3(r_plt, r(1:3:end), r(2:3:end), r(3:3:end), 'g', 'LineWidth', 2);
 end %if
 
-if PLOT_Q_ORB || PLOT_ORIENTATION
-    q_orb(4*len+1:end) = [];
-end %if
-
-if PLOT_ORIENTATION
-    cla(or_plt)
-    P_rot = zeros(size(P));
-    for i = 1:size(P, 2)
-        P_rot(:, i) = P(:, i) + cross(2*q_orb(end-2:end), cross(q_orb(end-2:end), P(:, i))+q_orb(end-3)*P(:, i));
-    end %for
-    num_poly = size(P, 2) / num_vtx;
-    x = zeros(num_vtx, num_poly);
-    y = zeros(num_vtx, num_poly);
-    z = zeros(num_vtx, num_poly);
-    for i = 1:num_poly
-        x(:, i) = P_rot(1, num_vtx*(i-1)+1:num_vtx*i);
-        y(:, i) = P_rot(2, num_vtx*(i-1)+1:num_vtx*i);
-        z(:, i) = P_rot(3, num_vtx*(i-1)+1:num_vtx*i);
-    end %if
-    if wireframe
-        plot3(or_plt, x([1:end 1], :), y([1:end 1], :), z([1:end 1], :), '-', 'Color', color_if_not_gradient, 'LineWidth', 1)
-    else
-        if gradient_if_not_wireframe
-            axes(or_plt)
-            patch(x, y, z, z, 'FaceAlpha', face_alpha)  
-            colorbar(or_plt)
-        else
-            axes(or_plt)
-            patch(x, y, z, color_if_not_gradient, 'FaceAlpha', face_alpha)
-        end %if
-    end %if
-    plot3(xlim, [0 0], [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
-    plot3([0 0], ylim, [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
-    plot3([0 0], [0 0], zlim, 'k', 'LineWidth', at_origin_axis_line_widths)
-end %if
-
 if PLOT_V
     v(3*len+1:end) = [];
     cla(v_plt)
@@ -486,11 +364,6 @@ if PLOT_Q
     q(4*len+1:end) = [];
     cla(q_plt)
     plot(q_plt, t, q(1:4:end), 'r', t, q(2:4:end), 'g', t, q(3:4:end), 'b', t, q(4:4:end), 'k', 'LineWidth', LINE_WIDTH)
-end %if
-
-if PLOT_Q_ORB
-    cla(q_orb_plt)
-    plot(q_orb_plt, t, q_orb(1:4:end), 'r', t, q_orb(2:4:end), 'g', t, q_orb(3:4:end), 'b', t, q_orb(4:4:end), 'k', 'LineWidth', LINE_WIDTH)
 end %if
     
 if PLOT_W
@@ -525,7 +398,7 @@ end %if
 end %function
 
 function fixAxes
-global v_plt v_b_plt w_plt q_plt q_orb_plt e_plt alt_plt b_star_plt t PLOT_V PLOT_Q PLOT_Q_ORB PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR
+global v_plt v_b_plt w_plt q_plt e_plt alt_plt b_star_plt t PLOT_V PLOT_Q PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR
 max_t = t(end);
 
 if PLOT_V
@@ -534,10 +407,6 @@ end %if
 
 if PLOT_Q
     xlim(q_plt, [0 max_t])
-end %if
-
-if PLOT_Q_ORB
-    xlim(q_orb_plt, [0 max_t])
 end %if
     
 if PLOT_W
@@ -562,15 +431,13 @@ end %if
 end %function
 
 function initBools
-global PLOT_R PLOT_V PLOT_Q PLOT_Q_ORB PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR PLOT_ORIENTATION
+global PLOT_R PLOT_V PLOT_Q PLOT_W PLOT_V_B PLOT_E PLOT_ALT PLOT_B_STAR
 PLOT_R = false;
 PLOT_V = false;
 PLOT_Q = false;
-PLOT_Q_ORB = false;
 PLOT_W = false;
 PLOT_V_B = false;
 PLOT_E = false;
 PLOT_ALT = false;
 PLOT_B_STAR = false;
-PLOT_ORIENTATION = false;
 end %function

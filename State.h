@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -29,8 +29,7 @@
 // it can do so with no overhead.
 //
 
-#ifndef STATE_H
-#define STATE_H
+#pragma once
 
 #include <algorithm>
 
@@ -97,4 +96,3 @@ inline dEvec13& s_to_e(State& s_state) {
 	return reinterpret_cast<dEvec13&>(s_state);
 }
 
-#endif

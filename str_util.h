@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -14,8 +14,7 @@
 // strings that are not already available in the standard library
 //
 
-#ifndef STR_UTIL_H
-#define STR_UTIL_H
+#pragma once
 
 #include <algorithm>
 #include <cctype>
@@ -55,4 +54,4 @@ inline void toupper(std::string& s) {
 	std::transform(s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::toupper));
 }
 
-#endif
+

@@ -1,16 +1,16 @@
 /*******************************************************************
-*   KAero_CUDA.cpp
+*   Aero_CUDA.cpp
 *   KPS
 *
 *	Author: Kareem Omar
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
-// KAero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
+// Aero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
 // in 3-D space. When supplied with air density and velocity (in the Body frame),
 // it approximates the drag force and torque on the body by simulating
 // collisions and accumulating impulses and angular impulses per unit time.
@@ -22,7 +22,7 @@
 // such as KPS.
 //
 
-#include "KAero.h"
+#include "Aero.h"
 
 #define PAD						(0.000001)
 
@@ -132,7 +132,7 @@ bool getHighestGFLOPSDevice(int& ID) {
 	return true;
 }
 
-bool KAero_CUDA::init(const int cuda_device_ID) {
+bool Aero_CUDA::init(const int cuda_device_ID) {
 	if (cuda_device_ID == AUTO_SELECT) {
 		if (!getHighestGFLOPSDevice(cuda_device)) return false;
 	}
@@ -155,12 +155,12 @@ bool KAero_CUDA::init(const int cuda_device_ID) {
 	cudaDeviceProp device_prop;
 	if (checkForCUDAError(cudaGetDeviceProperties(&device_prop, cuda_device))) return false;
 
-	std::cout << "CUDA KAero initialized on device " << cuda_device << ": " << device_prop.name << std::endl;
+	std::cout << "CUDA aero initialized on device " << cuda_device << ": " << device_prop.name << std::endl;
 
 	return true;
 }
 
-KAero_CUDA::KAero_CUDA(const double linear_pitch, const int num_polygons, const vec3* const poly, const vec3 sat_CM) :
+Aero_CUDA::Aero_CUDA(const double linear_pitch, const int num_polygons, const vec3* const poly, const vec3 sat_CM) :
 pitch(linear_pitch),
 f_scalar(2.0*linear_pitch*linear_pitch),
 num_poly(num_polygons),
@@ -176,7 +176,7 @@ P_rot(new vec3[num_polygons * NUM_VTX]) {
 
 }
 
-KAero_CUDA::~KAero_CUDA() {
+Aero_CUDA::~Aero_CUDA() {
 	cudaDeviceReset();
 }
 
@@ -206,7 +206,7 @@ __global__ void precompute(vec3* __restrict__ const d_P_rot,
 		// precompute some info for speed,
 		// including panel normals and some of collision location math
 		vec3* P = d_P_rot + i*NUM_VTX;
-		d_N[i] = glm::normalize(glm::cross(P[2] - P[1], P[2] - P[3]));
+		d_N[i] = glm::normalize(glm::cross(P[1] - P[0], P[1] - P[2]));
 		d_precomp[i] = glm::dot(d_N[i], P[0]);
 
 		l_min_y = l_max_y = P[0].y;
@@ -532,7 +532,7 @@ __global__ void collide(vec3* __restrict__ const d_P_rot,
 
 }
 
-void KAero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
+void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 
 	// zero out 'f' and 't'
 	f = t = vec3();

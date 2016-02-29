@@ -6,15 +6,14 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
 // Platform-indepdendent file reading (i.e. independent of newline character)
 //
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -23,4 +22,3 @@
 
 bool getNextLine(std::ifstream& in_f, std::string& line);
 
-#endif

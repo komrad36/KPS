@@ -45,10 +45,13 @@
     <ClInclude Include="State.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KAero.h">
+    <ClInclude Include="Propagators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Propagators.h">
+    <ClInclude Include="clipper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Aero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,12 +83,18 @@
     <ClCompile Include="PolyInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KAero_CPU.cpp">
+    <ClCompile Include="clipper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Aero_Analytical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Aero_CPU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="KAero_CUDA.cu">
+    <CudaCompile Include="Aero_CUDA.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>

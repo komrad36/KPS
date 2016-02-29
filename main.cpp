@@ -1,12 +1,12 @@
 /*******************************************************************
 *   main.cpp
 *   KPS
-*	
+*
 *	Author: Kareem Omar
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -41,7 +41,7 @@ const int EXPECTED_ARGS = 2;
 #include <vector>
 
 #include "Earth.h"
-#include "KAero.h"
+#include "Aero.h"
 #include "ParamInput.h"
 #include "PolyInput.h"
 #include "Output.h"
@@ -229,11 +229,15 @@ int main(int argc, char* argv[]) {
 	// --- /Initialize geoid model ---
 
 	// --- Initialize aero engine ---
-	std::cout << "Initializing KAero..." << std::endl;
-	KAero* kdrag;
-	if (params.cuda_device == USE_CPU) {
-		kdrag = new KAero_CPU(params.pitch, num_poly, &poly[0], params.sat_cm);
-		std::cout << "CPU KAero ready." << std::endl;
+	std::cout << "Initializing aero..." << std::endl;
+	Aero* kdrag;
+	if (params.aero_mode == USE_CPU) {
+		kdrag = new Aero_CPU(params.pitch, num_poly, &poly[0], params.sat_cm);
+		std::cout << "CPU aero ready." << std::endl;
+	}
+	else if (params.aero_mode == ANALYTICAL) {
+		kdrag = new Aero_Analytical(params.pitch, num_poly, &poly[0], params.sat_cm);
+		std::cout << "Analytical aero ready." << std::endl;
 	}
 	else {
 		// if in CUDA mode, check if the user has accepted the CUDA EULA
@@ -249,7 +253,7 @@ int main(int argc, char* argv[]) {
 			std::string response;
 			std::cin >> response;
 			std::cout << std::endl;
-			
+
 			if (response == "YES") {
 				// if user accepts EULA, record user's choice for future runs
 				std::ofstream eula_save(CUDA_EULA_FILE_NAME);
@@ -259,17 +263,17 @@ int main(int argc, char* argv[]) {
 				// if not, terminate.
 				std::cerr
 					<< "ERROR: user did not accept the NVIDIA CUDA EULA. KPS can only be run in CPU\n"
-					<< "mode unless the user accepts the NVIDIA CUDA EULA. Aborting." << std::endl;
+					<< "or Analytical mode unless the user accepts the NVIDIA CUDA EULA. Aborting." << std::endl;
 				return EXIT_FAILURE;
 			}
 
 		}
 		eula_check.close();
 
-		KAero_CUDA* kdrag_cuda = new KAero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
-		if (!kdrag_cuda->init(params.cuda_device)) return EXIT_FAILURE;
+		Aero_CUDA* kdrag_cuda = new Aero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
+		if (!kdrag_cuda->init(params.aero_mode)) return EXIT_FAILURE;
 		kdrag = kdrag_cuda;
-		std::cout << "CUDA KAero ready." << std::endl;
+		std::cout << "CUDA aero ready." << std::endl;
 	}
 	// polygon data has been copied into aero engine and is no longer needed
 	poly.clear();

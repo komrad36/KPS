@@ -6,7 +6,7 @@
 *	kareem.omar@uah.edu
 *	https://github.com/komrad36
 *
-*	Last updated Feb 12, 2016
+*	Last updated Feb 27, 2016
 *   This application is entirely my own work.
 *******************************************************************/
 //
@@ -29,7 +29,7 @@ class Output {
 protected:
 	bool realtime;
 
-	static const int NUM_OUTFILES = 9;
+	static const int NUM_OUTFILES = 10;
 	static const std::string OUT_PREFIXES[NUM_OUTFILES];
 	static const std::string LOCK_FILE_NAME;
 
