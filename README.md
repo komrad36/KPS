@@ -31,10 +31,9 @@
 
 ## Overview ##
 
-KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for real-time aerodynamics simulation, for Windows and Linux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by an Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
+KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for analytical (area-based) OR collision-based real-time aerodynamics simulation, for Windows and Linux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by a custom Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
-Realtime visualization and other useful tools are dually available as MATLAB(r) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace
-and high-performance computing.
+Realtime visualization and other useful tools are dually available as MATLAB(r) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace and high-performance computing.
 
 ## License ##
 
@@ -123,10 +122,10 @@ The configuration file specifies 21 parameters required by KPS to operate, in an
     TIME_SINCE_EPOCH_AT_DEPLOY = 0.0
     GRAV_MODEL = wgs84
     PROPAGATOR = abm
-    CUDA_DEVICE = NONE
-    ABS_TOL = 1e-8
+    AERO_MODE = ANALYTICAL
+    ABS_TOL = 1e-6
     REL_TOL = 2.3e-14
-    KAERO_PITCH = 0.01
+    AERO_PITCH = 0.01
     MAX_STEP_SIZE = 26000
     MAG_MODEL = wmm2015
     MAG_YEAR = 2016
@@ -151,13 +150,13 @@ GRAV_MODEL = the GeographicLib gravity model to use for gravitational accelerati
 
 PROPAGATOR = the numerical integrator to use. Available integrators are: “RKDP” and “ABM”. The first is a Runge-Kutta Dormand-Prince pair solver, like MATLAB’s ode45(). The second is a faster and more accurate Adams-Bashforth-Moulton linear multistep solver, like MATLAB’s ode113(). ABM should generally be used.
 
-CUDA_DEVICE = the device ID of the CUDA device to be used for aerodynamics. Specify AUTO to autoselect the fastest CUDA device on your system, or NONE to use CPU only. NOTE: for large linear pitch values, CPU can be *faster* due to the overhead of constantly preparing data for GPU processing – experiment and see what is fastest for your configuration.
+AERO_MODE = Specify ANALYTICAL to use area-based analytical aerodynamics force and torque computation. See the KPS research paper for more information. To use CUDA collision mode, specify a nonnegative integer representing the device ID of the desired CUDA device, or specify CUDA_AUTO to autoselect the fastest CUDA device on your system, or specify CPU to use CPU-only collision-based aerodynamics. NOTE: for large linear pitch values, CPU can be *faster* due to the overhead of constantly preparing data for GPU processing – experiment and see what is fastest for your configuration. ANALYTICAL is recommended as it is the most accurate, yet still quite fast. CPU with very coarse pitch settings is likely to be the absolute fastest option if extreme accuracy is not desired.
 
 ABS_TOL = the absolute tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation. Typical value: 1e-6
 
 REL_TOL = the relative tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation, but unlike absolute tolerance, a low relative tolerance is *critical* for a chaotic system like satellite propagation. Typical value: 2.3e-14
 
-KAERO_PITCH = the linear pitch between test particle collisions for the aerodynamics Monte Carlo, in meters. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so don’t make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
+AERO_PITCH = if in collision-based aerodynamics mode, this is the linear pitch between test particle collisions for the aerodynamics engine, in meters. This value is IGNORED if ANALYTICAL aero mode is in use. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so don’t make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
 
 MAX_STEP_SIZE = the maximum step size in seconds between two steps during integration. The integrators are both adaptive step size, meaning that they adjust the step size as necessary to maintain the requested tolerances while moving as fast as they can. This value doesn’t usually need to be adjusted. Typical value: 26000 
 
@@ -316,16 +315,21 @@ The main event! The user runs KPS as follows:
 
     KPS poly.kps config.kps
 
-The system responds by echoing the parameters and other diagnostic information. If CUDA_DEVICE is set to NONE, the aerodynamics module reports CPU initialization:
+The system responds by echoing the parameters and other diagnostic information. If AERO_MODE is set to ANALYTICAL, the aerodynamics module reports analytical-mode initialization:
 
-    Initializing KAero...
-    CPU KAero ready.
+    Initializing aero...
+    Analytical aero ready.
+	
+If AERO_MODE is set to CPU, the aerodynamics module reports CPU initialization:
 
+    Initializing aero...
+    CPU aero ready.
+	
 Otherwise, the aerodynamics module reports CUDA initialization:
 
-    Initializing KAero...
-    CUDA KAero initialized on device 0: GeForce GTX 780M
-    CUDA KAero ready.
+    Initializing aero...
+    CUDA aero initialized on device 0: GeForce GTX 780M
+    CUDA aero ready.
 
 If all initialization is successful, the system reports:
 
@@ -352,30 +356,34 @@ Or, if the user aborted propagation:
     Propagation terminated by user after 0.749 sec realtime.
 
 ## KPS_Vis ##
-The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of eight satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
+The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of ten satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
 Parameter	|	Description
 ----------- | -----------------------------------
 R			|	Position
 V			|	Velocity
 Q			|	Attitude Quaternion
+Q_ORB		|	Quaternion to Orbital Frame
+ALT			|	Altitude
+B_STAR		|	Starred Ballistic Coefficient
 W			|	Angular Velocity
 V_B			|	Velocity (in Body Frame)
 E			|	Pointing Error
-ALT			|	Altitude
-B_STAR		|	Starred Ballistic Coefficient
+ORIENTATION	|	Live 3-D View of Satellite Polygons
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
-    % PLOT_R = true
-    % PLOT_V = true
-    % PLOT_Q = true
-    % PLOT_W = true
-    % PLOT_V_B = true
-    PLOT_E = true
-    PLOT_ALT = true
-    PLOT_B_STAR = true
+	% PLOT_R = true;
+	% PLOT_V = true;
+	% PLOT_Q = true;
+	% PLOT_Q_ORB = true;
+	% PLOT_ALT = true;
+	% PLOT_B_STAR = true;
+	PLOT_W = true;
+	PLOT_V_B = true;
+	PLOT_E = true;
+	% PLOT_ORIENTATION = true;
 
-More than about 3 plots or so will be too small to be useful. Choose the ones you want, then save the file and run the simulation in the same directory as the KPS output files! No arguments required.
+More than about 3 plots or so at one time will be too small to be useful. Choose the ones you want, then save the file and run the simulation in the same directory as the KPS output files! No arguments to the script are required.
 
 The simulation starts in REALTIME mode, constantly checking for and adding any new data from the KPS output files. If it sees no change for a while, indicating that simulation has finished, it switches to FINAL mode, cleans up the plots, adjusts the axes, and enables interactive mode for the user, who is then free to zoom, scale, rotate, save plots to image files, etc. This utility requires the matplotlib and numpy modules. Some example screenshots are included with KPS.
