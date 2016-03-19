@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
 	std::vector<vec3> poly;
 	int num_poly;
 	if (!parsePoly(poly, num_poly, argv[1])) return EXIT_FAILURE;
-	std::cout << num_poly << " polygons loaded." << std::endl;
+	std::cout << num_poly << " polygon" << (num_poly == 1 ? "" : "s") << " loaded." << std::endl;
 	// --- /Parse polygon file ---
 
 
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 	Params params;
 	if (!params.assign(raw_params)) return EXIT_FAILURE;
 	std::cout
-		<< params.NUM_PARAMS << " parameters loaded." << std::endl << std::endl
+		<< params.NUM_PARAMS << " parameter" << (params.NUM_PARAMS == 1 ? "" : "s") << " loaded." << std::endl << std::endl
 		<< "-------------------------------- Configuration --------------------------------" << std::endl;
 	params.printVals();
 	std::cout << std::string(79, '-') << std::endl << std::endl;

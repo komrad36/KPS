@@ -30,8 +30,6 @@
 #define NONE					(-9999999.0)
 
 // threads in one dimension
-//
-//
 #define THREADS					(16)
 
 // wrap around a CUDA function call to check and report any errors
@@ -141,7 +139,10 @@ bool Aero_CUDA::init(const int cuda_device_ID) {
 	}
 
 	if (checkForCUDAError(cudaSetDevice(cuda_device))) return false;
-
+#if (__CUDA_ARCH__ >= 300)
+	if (checkForCUDAError(cudaDeviceSetSharedMemConfig(cudaSharedMemBankSizeEightByte))) return false;
+#endif
+	if (checkForCUDAError(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared))) return false;
 	if (checkForCUDAError(cudaMalloc(&d_N, num_poly*sizeof(vec3)))) return false;
 	if (checkForCUDAError(cudaMalloc(&d_precomp, num_poly*sizeof(double)))) return false;
 	if (checkForCUDAError(cudaMalloc(&d_min_y, num_poly*sizeof(double)))) return false;
@@ -152,10 +153,21 @@ bool Aero_CUDA::init(const int cuda_device_ID) {
 	if (checkForCUDAError(cudaMalloc(&d_P_rot, total_pts * sizeof(vec3)))) return false;
 	if (checkForCUDAError(cudaMalloc(&d_CM_R, sizeof(vec3)))) return false;
 
+	if (checkForCUDAError(cudaMallocHost(&P_rot, num_poly * NUM_VTX * sizeof(vec3)))) return false;
+	if (checkForCUDAError(cudaMallocHost(&totals, 4 * sizeof(double)))) return false;
+
+	// dynamically allocate device memory for the force and torque sums from each block
+	if (checkForCUDAError(cudaMalloc(&d_block_sums_f, cur_block_sums*sizeof(vec3)))) return false;
+	if (checkForCUDAError(cudaMalloc(&d_block_sums_t, cur_block_sums*sizeof(vec3)))) return false;
+
+	// dynamically allocate host memory for the force and torque sums from each block
+	if (checkForCUDAError(cudaMallocHost(&block_sums_f, cur_block_sums*sizeof(vec3)))) return false;
+	if (checkForCUDAError(cudaMallocHost(&block_sums_t, cur_block_sums*sizeof(vec3)))) return false;
+
 	cudaDeviceProp device_prop;
 	if (checkForCUDAError(cudaGetDeviceProperties(&device_prop, cuda_device))) return false;
 
-	std::cout << "CUDA aero initialized on device " << cuda_device << ": " << device_prop.name << std::endl;
+	std::cout << "CUDA aero initialized on Device " << cuda_device << ": " << device_prop.name << std::endl;
 
 	return true;
 }
@@ -167,16 +179,18 @@ num_poly(num_polygons),
 total_pts(num_polygons * NUM_VTX),
 CM(sat_CM),
 P_s(new vec3[num_polygons * NUM_VTX]),
-P_rot(new vec3[num_polygons * NUM_VTX]) {
+cur_block_sums(static_cast<int>(2.0 / linear_pitch)) {
 
 	// copy polygon data into internal storage
-	for (int i = 0; i < total_pts; ++i) {
-		P_s[i] = poly[i];
-	}
+	memcpy(P_s, poly, total_pts*sizeof(vec3));
 
 }
 
 Aero_CUDA::~Aero_CUDA() {
+	delete[] P_s;
+	cudaFreeHost(P_rot);
+	cudaFreeHost(block_sums_f);
+	cudaFreeHost(block_sums_t);
 	cudaDeviceReset();
 }
 
@@ -190,7 +204,7 @@ __global__ void precompute(vec3* __restrict__ const d_P_rot,
 
 	int i = threadIdx.x;
 
-	// partition shared memory into 4 chunks of num_poly doublesm
+	// partition shared memory into 4 chunks of num_poly doubles
 	// for storing the min y's, max y's, min z's, and max z's, respectively
 	extern __shared__ double s_min_y[];
 	double* s_max_y = s_min_y + num_poly;
@@ -434,7 +448,7 @@ __global__ void collide(vec3* __restrict__ const d_P_rot,
 		// if a collision occurred
 		if (best_x > NONE + PAD) {
 			// see Equation 62 in KPS Research paper
-			force = f_scalar*rho*best_N*(-v_mag2*best_N.x*fabs(best_N.x));
+			force = -f_scalar*rho*v_mag2*best_N.x*best_N;
 
 			// see Equation 63 in KPS Research paper
 			torque = glm::cross(vec3{ best_x, y, z } -(*d_CM_R), force);
@@ -638,7 +652,6 @@ void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 		std::cerr
 			<< "ERROR: Too many polygons! This should never occur, as it should be caught" << std::endl
 			<< "in the polygon input stage." << std::endl;
-		break;
 	}
 
 	cudaMemcpy(totals, d_totals, 4 * sizeof(double), cudaMemcpyDeviceToHost);
@@ -661,13 +674,24 @@ void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 
 	const int collide_blks_total = collide_blks_x * collide_blks_y;
 
-	// dynamically allocate device memory for the force and torque sums from each block
-	cudaMalloc(&d_block_sums_f, collide_blks_total*sizeof(vec3));
-	cudaMalloc(&d_block_sums_t, collide_blks_total*sizeof(vec3));
+	// out of space. reallocate!
+	if (collide_blks_total > cur_block_sums) {
+		cur_block_sums = 3 * collide_blks_total / 2;
 
-	// dynamically allocate host memory for the force and torque sums from each block
-	block_sums_f = new vec3[collide_blks_total];
-	block_sums_t = new vec3[collide_blks_total];
+		cudaFree(d_block_sums_f);
+		cudaFree(d_block_sums_t);
+
+		cudaFreeHost(block_sums_f);
+		cudaFreeHost(block_sums_t);
+
+		// dynamically allocate device memory for the force and torque sums from each block
+		cudaMalloc(&d_block_sums_f, cur_block_sums*sizeof(vec3));
+		cudaMalloc(&d_block_sums_t, cur_block_sums*sizeof(vec3));
+
+		// dynamically allocate host memory for the force and torque sums from each block
+		cudaMallocHost(&block_sums_f, cur_block_sums*sizeof(vec3));
+		cudaMallocHost(&block_sums_t, cur_block_sums*sizeof(vec3));
+	}
 
 	// collide!
 	// shared memory is 2 vec3's (one for force, one for torque) per thread
@@ -680,14 +704,8 @@ void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	// retrieve force block sums
 	cudaMemcpy(block_sums_f, d_block_sums_f, collide_blks_total*sizeof(vec3), cudaMemcpyDeviceToHost);
 
-	// free force block sum device dynamic allocation
-	cudaFree(d_block_sums_f);
-
 	// retrieve torque block sums
 	cudaMemcpy(block_sums_t, d_block_sums_t, collide_blks_total*sizeof(vec3), cudaMemcpyDeviceToHost);
-
-	// free torque block sum device dynamic allocation
-	cudaFree(d_block_sums_t);
 
 	// accumulate the block sums
 	// there won't be too many; Kahan summation is not required
@@ -700,11 +718,4 @@ void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	// (note the negative sign)
 	f = cos_theta*f - sin_theta*glm::cross(k, f) + k_times_1_minus_cos_theta*glm::dot(k, f);
 	t = cos_theta*t - sin_theta*glm::cross(k, t) + k_times_1_minus_cos_theta*glm::dot(k, t);
-
-	// free force block sum host dynamic allocation
-	delete[] block_sums_f;
-
-	// free torque block sum host dynamic allocation
-	delete[] block_sums_t;
-
 }

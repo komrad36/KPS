@@ -83,7 +83,6 @@ set(gca, 'FontSize', font_size, 'LineWidth', outer_axis_line_widths)
 xlabel('x_b_o_d_y [m]')
 ylabel('y_b_o_d_y [m]')
 zlabel('z_b_o_d_y [m]')
-title(['KPS - ' short_name], 'Interpreter', 'none')
 
 if wireframe
     plot3(x([1:end 1], :), y([1:end 1], :), z([1:end 1], :), '-', 'Color', color_if_not_gradient, 'LineWidth', 1)

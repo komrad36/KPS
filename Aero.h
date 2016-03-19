@@ -27,8 +27,10 @@
 
 #pragma once
 
-#define CLIP_MUL 1e6
-#define INV_CLIP_MUL 1e-6
+#define CLIP_PAD		1e-4
+
+#define CLIP_MUL		1e16
+#define INV_CLIP_MUL	1e-16
 
 #include "glm_util.h"
 
@@ -39,6 +41,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -101,7 +104,9 @@ private:
 	double* d_totals;
 
 	// host array of accumulated total bounds
-	double totals[4];
+	double* totals;
+
+	int cur_block_sums;
 
 	// device ptr to rotated satellite center of mass
 	vec3* d_CM_R;
@@ -110,7 +115,7 @@ private:
 	vec3* const P_s;
 
 	// host ptr to rotated polygons
-	vec3* const P_rot;
+	vec3* P_rot;
 
 	// CUDA Device ID
 	int cuda_device;

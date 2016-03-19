@@ -90,7 +90,7 @@ void Aero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2) 
 				// see https://en.wikipedia.org/wiki/Kahan_summation_algorithm
 				//
 				// see Equation 62 in KPS Research paper
-				force = f_scalar*rho*best_N*(-v_mag2*best_N.x*fabs(best_N.x)) - sum_F_compensation;
+				force = -f_scalar*rho*v_mag2*best_N.x*best_N - sum_F_compensation;
 				interm_F = f + force;
 				sum_F_compensation = (interm_F - f) - force;
 				f = interm_F;
@@ -163,5 +163,4 @@ void Aero_CPU::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	// (note the negative sign)
 	f = cos_theta*f - sin_theta*glm::cross(k, f) + k_times_1_minus_cos_theta*glm::dot(k, f);
 	t = cos_theta*t - sin_theta*glm::cross(k, t) + k_times_1_minus_cos_theta*glm::dot(k, t);
-
 }

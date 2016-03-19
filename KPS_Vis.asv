@@ -46,12 +46,12 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
-ALT
-B_STAR
+% ALT
+% B_STAR
 % W
 % V_B
 % E
@@ -299,7 +299,7 @@ while true
             M(idx) = M(idx) + 2*pi;
 
             rng_b = rng_a + size(r, 2) - 1;
-            % the magic num is 1/mu, Earth's standard gravitational parameter,
+            % the magic num is 1/mu, Earth's standard gravitational parameter,            % parameter
             % precomputed for speed
             data{SEMI_MAJOR}(rng_a:rng_b) = 1./(2./r_mag-v_mag.*2.50877795188635e-15.*v_mag);
             data{TRUE_ANOM}(rng_a:rng_b) = nu*rad_to_deg;
@@ -343,9 +343,9 @@ while true
                     patch(x, y, z, color_if_not_gradient, 'FaceAlpha', face_alpha, 'Parent', h_plots(i))
                 end %if
             end %if
-            plot3(h_plots(i), xlim(h_plots(i)), [0 0], [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
-            plot3(h_plots(i), [0 0], ylim(h_plots(i)), [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
-            plot3(h_plots(i), [0 0], [0 0], zlim(h_plots(i)), 'k', 'LineWidth', at_origin_axis_line_widths)
+            plot3(xlim, [0 0], [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
+            plot3([0 0], ylim, [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
+            plot3([0 0], [0 0], zlim, 'k', 'LineWidth', at_origin_axis_line_widths)
         else
             refreshdata(h_lines{i}, 'caller')
         end %if

@@ -84,12 +84,15 @@ h = cross(r, v);
 % eccentricity vector
 e_vec = cross(v, h)/GM-r/r_mag;
 
+% scalar eccentricity
+e = norm(e_vec);
+
 % ascending node vector
 n = [-h(2), h(1), 0.0];
 n_mag = norm(n);
 
 % true anomaly
-nu = acos(dot(e_vec, r)/(norm(e_vec)*r_mag));
+nu = acos(dot(e_vec, r)/(e*r_mag));
 if dot(r, v) < 0.0
     nu = 2*pi - nu;
 end %if
@@ -97,8 +100,7 @@ end %if
 % inclination
 i = acos(h(3)/norm(h));
 
-% scalar eccentricity
-e = norm(e_vec);
+
 
 % eccentric anomaly
 E = 2*atan2(tan(0.5*nu), sqrt((1+e)/(1-e)));
@@ -110,7 +112,7 @@ if n(2) < 0.0
 end %if
 
 % argument of periapsis
-w = acos(dot(n, e_vec)/(n_mag*e));
+w = real(acos(dot(n, e_vec)/(n_mag*e)));
 if e_vec(3) < 0.0
     w = 2*pi - w;
 end %if

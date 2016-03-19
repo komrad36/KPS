@@ -63,101 +63,128 @@ void Aero_Analytical::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	// zero out 'f' and 't'
 	f = t = vec3();
 
-	ClipperLib::Path clip, subj;
-	clip.reserve(NUM_VTX);
-	subj.reserve(NUM_VTX);
-	ClipperLib::Paths clip_list;
-	clip_list.reserve(num_poly);
-	// for each polygon
+	ClipperLib::Paths sol;
+	// consider each polygon in turn, referred to as the 'subject' polygon.
 	for (int i = 0; i < num_poly; ++i) {
-		// check other polys and build a list of those in front of ith polygon
 
-		// subject polygon
+		// subject polygon ptr
 		vec3* S = P_rot + i*NUM_VTX;
-		subj.clear();
-		clip_list.clear();
-		for (int vtx = 0; vtx < NUM_VTX; ++vtx) {
-			subj.push_back(ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*S[vtx].y), static_cast<ClipperLib::cInt>(CLIP_MUL*S[vtx].z)));
-		}
 
-		for (int j = (i == 0); j < num_poly; j += j==i-1 ? 2 : 1) {
+		// convert to integer coords as required by Clipper library to prevent numerical error
+		// currently hardcoded to 4 vertices for speed; modify if you change NUM_VTX,
+		// or just substitute a for loop to handle all cases automatically (slower)
+		//
+		// CLIP_MUL is chosen to minimize numerical error and remain within the bounds of 64-bit signed integers
+		// for typical polygon coordinates
+		ClipperLib::Paths subjs = { {
+				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*S[0].y), static_cast<ClipperLib::cInt>(CLIP_MUL*S[0].z)),
+				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*S[1].y), static_cast<ClipperLib::cInt>(CLIP_MUL*S[1].z)),
+				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*S[2].y), static_cast<ClipperLib::cInt>(CLIP_MUL*S[2].z)),
+				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*S[3].y), static_cast<ClipperLib::cInt>(CLIP_MUL*S[3].z))
+			} };
 
-			// candidate polygon
+		// now consider each of the remaining polygons in turn, referred to as the 'candidate' polygon
+		for (int j = (i == 0); j < num_poly; j += 1 + (j==i-1)) {
+
+			// candidate polygon ptr
 			vec3* C = P_rot + j*NUM_VTX;
 
+			// if j < i we already have information on which polygon is in front
+			// and, thus, whether the subject polygon can be occluded by this candidate
 			if (j < i) {
 				if (!lower_idx_is_above[j*num_poly + i]) {
-					clip_list.push_back({
+					clipper.Clear();
+					clipper.AddPaths(subjs, ClipperLib::ptSubject, true);
+					clipper.AddPath({
 						ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].z)),
 						ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].z)),
 						ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].z)),
 						ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].z))
-					});
+					}, ClipperLib::ptClip, true);
+					clipper.Execute(ClipperLib::ctDifference, subjs);
 				}
-				continue;
 			}
+			else {
+				lower_idx_is_above[i*num_poly + j] = true;
 
-			lower_idx_is_above[i*num_poly + j] = true;
+				// if the bounding boxes of subject and candidate don't overlap, there's no occlusion,
+				// so we can bail out early, which improves performance despite the cost of evaluating the bounding extrema
+				if (min_y[i] >= max_y[j] || max_y[i] <= min_y[j] || min_z[i] >= max_z[j] || max_z[i] <= min_z[j]) continue;
 
-			// if no overlap from this candidate, do not add to clip list
-			if (min_y[i] >= max_y[j] || max_y[i] <= min_y[j] || min_z[i] >= max_z[j] || max_z[i] <= min_z[j]) continue;
+				// otherwise, use Clipper to determine the intersection of the two polygons,
+				// and check the intersection's vertices to see which polygon is in front
+				clipper.Clear();
+				clipper.AddPaths(subjs, ClipperLib::ptSubject, true);
+				clipper.AddPath({
+					ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].z)),
+					ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].z)),
+					ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].z)),
+					ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].z))
+				},ClipperLib::ptClip, true);
+				clipper.Execute(ClipperLib::ctIntersection, sol);
+				if (sol.empty()) continue;
+				for (auto&& pt : sol[0]) {
+					double y = INV_CLIP_MUL*static_cast<double>(pt.X);
+					double z = INV_CLIP_MUL*static_cast<double>(pt.Y);
+					double subj_x = (precomp[i] - (N[i].y*y + N[i].z*z)) / N[i].x;
+					double clip_x = (precomp[j] - (N[j].y*y + N[j].z*z)) / N[j].x;
 
-			// if there is overlap, check vertices of intersection to see which polygon is above.
-			// if candidate is below, do not add to clip list
-			// if candidate is above, add to clip list
-			clip = {
-				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[0].z)),
-				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[1].z)),
-				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[2].z)),
-				ClipperLib::IntPoint(static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].y), static_cast<ClipperLib::cInt>(CLIP_MUL*C[3].z))
-			};
-			clipper.Clear();
-			ClipperLib::Paths sol;
-			clipper.AddPath(subj, ClipperLib::ptSubject, true);
-			clipper.AddPath(clip, ClipperLib::ptClip, true);
-			clipper.Execute(ClipperLib::ctIntersection, sol);
-			if (sol.empty()) continue;
-			lower_idx_is_above[i*num_poly + j] = false;
-			for (const ClipperLib::IntPoint& pt : sol[0]) {
-				double y = INV_CLIP_MUL*static_cast<double>(pt.X);
-				double z = INV_CLIP_MUL*static_cast<double>(pt.Y);
-				double subj_x = (precomp[i] - (N[i].y*y + N[i].z*z)) / N[i].x;
-				double clip_x = (precomp[j] - (N[j].y*y + N[j].z*z)) / N[j].x;
-				if (subj_x > clip_x) break;
-				if (subj_x < clip_x) {
-					lower_idx_is_above[i*num_poly + j] = true;
-					clip_list.push_back(clip);
-					break;
+					// if the subject is in front, the candidate does not occlude it,
+					// but the candidate does occlude the subject, so store that info
+					// to save time later
+					//
+					// numerical error is once again present in this floating point
+					// computation so CLIP_PAD prevents false triggers when the
+					// points are actually equal (so we should do nothing and wait
+					// for another vertex to be tested that is not shared between
+					// subject and candidate), but end up very slightly apart.
+					if (subj_x > clip_x + CLIP_PAD) {
+						lower_idx_is_above[i*num_poly + j] = false;
+						break;
+					}
+					// if the candidate is in front, clip the subject with the
+					// candidate to get the remaining unoccluded polygon 
+					if (subj_x + CLIP_PAD < clip_x) {
+						clipper.Execute(ClipperLib::ctDifference, subjs);
+						break;
+					}
 				}
 			}
 		}
 
-		// now that clip list is complete, get unoccluded portion
-		clipper.Clear();
-		ClipperLib::Paths sol;
-		clipper.AddPath(subj, ClipperLib::ptSubject, true);
-		clipper.AddPaths(clip_list, ClipperLib::ptClip, true);
-		clipper.Execute(ClipperLib::ctDifference, sol);
-		for (const ClipperLib::Path& path : sol) {
-			ClipperLib::cInt area = 0, cm_y = 0, cm_z = 0;
+		// subjs now has one or more polygons representing the portion of the original
+		// subject polygon that remain unoccluded by any other polygons.
+		// 
+		// thus, subjs contains panels exposed to aerodynamic force.
+		// for each one, compute the area and center of mass,
+		// then use that information to compute total force and torque on that panel
+		// and accumulate the totals in 'f' and 't'
+		for (auto&& path : subjs) {
+			double area = 0.0, cm_y = 0.0, cm_z = 0.0;
 			size_t highest = path.size() - 1;
 			size_t m = highest;
 			for (size_t n = 0; n <= highest; ++n) {
-				ClipperLib::cInt factor = path[n].X*path[m].Y - path[m].X*path[n].Y;
+				double x_n = INV_CLIP_MUL*static_cast<double>(path[n].X);
+				double x_m = INV_CLIP_MUL*static_cast<double>(path[m].X);
+				double y_n = INV_CLIP_MUL*static_cast<double>(path[n].Y);
+				double y_m = INV_CLIP_MUL*static_cast<double>(path[m].Y);
+
+				double factor = x_n*y_m - x_m*y_n;
 				area += factor;
-				cm_y += (path[n].X + path[m].X)*factor;
-				cm_z += (path[n].Y + path[m].Y)*factor;
+				cm_y += (x_n + x_m)*factor;
+				cm_z += (y_n + y_m)*factor;
+
 				m = n;
 			}
-			double area_d = INV_CLIP_MUL*INV_CLIP_MUL*0.5*area;
-			double cm_d_y = INV_CLIP_MUL*INV_CLIP_MUL*INV_CLIP_MUL*static_cast<double>(cm_y) / (6.0 * area_d);
-			double cm_d_z = INV_CLIP_MUL*INV_CLIP_MUL*INV_CLIP_MUL*static_cast<double>(cm_z) / (6.0 * area_d);
+			area *= 0.5;
+			double inv_6_area = area ? 1.0 / (6.0 * area) : 0.0;
+			cm_y *= inv_6_area;
+			cm_z *= inv_6_area;
 
-			vec3 force = 2.0*fabs(area_d)*rho*N[i] * (-v_mag2*N[i].x*fabs(N[i].x));
+			vec3 force = -2.0*rho*v_mag2*fabs(area)*N[i].x*N[i];
 			f += force;
-			if (N[i].x) t += glm::cross(vec3{ (precomp[i] - (N[i].y*cm_d_y + N[i].z*cm_d_z)) / N[i].x, cm_d_y, cm_d_z } -CM_R, force);
+			if (N[i].x) t += glm::cross(vec3{ (precomp[i] - (N[i].y*cm_y + N[i].z*cm_z)) / N[i].x, cm_y, cm_z } -CM_R, force);
 		}
-
 	}
 
 	// --- /COMPUTE ---
@@ -167,5 +194,4 @@ void Aero_Analytical::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	// (note the negative sign)
 	f = cos_theta*f - sin_theta*glm::cross(k, f) + k_times_1_minus_cos_theta*glm::dot(k, f);
 	t = cos_theta*t - sin_theta*glm::cross(k, t) + k_times_1_minus_cos_theta*glm::dot(k, t);
-
 }
