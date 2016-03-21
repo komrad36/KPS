@@ -6,7 +6,7 @@
 %	kareem.omar@uah.edu
 %	https://github.com/komrad36
 %
-%	Last updated Mar 11, 2016
+%	Last updated Mar 20, 2016
 %   This application is entirely my own work.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -20,6 +20,7 @@
 %
 
 function KPS_Vis
+% do not modify this line; configure plotting options below
 [t, R, V, Q, Q_ORB, ALT, B_STAR, W, V_B, E, ORIENTATION, SEMI_MAJOR, ECC, INC, RAAN, PERIAPSIS, MEAN_ANOM, TRUE_ANOM, ECC_ANOM] = deal(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19);
 %% User configurables
 
@@ -46,15 +47,15 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
-ALT
-B_STAR
+% ALT
+% B_STAR
 % W
 % V_B
-% E
+E
 % SEMI_MAJOR
 % ECC
 % INC
@@ -70,7 +71,7 @@ B_STAR
 
 if exist('OCTAVE_VERSION', 'builtin')
   face_alpha = 1.0;
-  LEGEND_FONT_SIZE = 8;
+  LEGEND_FONT_SIZE = 13;
   graphics_toolkit('fltk')
 end %if
 
@@ -80,7 +81,7 @@ elems = [1,3,3,4,4,1,1,3,3,1,0,1,1,1,1,1,1,1,1];
 % names of data files
 names = {'t', 'r', 'v', 'q', 'q_orb', 'alt', 'b_star', 'w', 'v_body', 'p_e'};
 titles = {'', 'Position', 'Velocity', 'Quaternion to ECI Frame', 'Quaternion to Orbital Frame', 'Altitude', 'Starred Ballistic Coefficient', 'Angular Velocity', 'Velocity in Body Frame', 'Pointing Error', 'Live Orientation', 'Semi-Major Axis', 'Eccentricity', 'Inclination', 'Longitude of Ascending Node', 'Argument of Periapsis', 'Mean Anomaly', 'True Anomaly', 'Eccentric Anomaly'};
-ylabels = {'', 'y_{ECI}', '[m/s]', 'Component', 'Component', '[m]', 'm^-^1', '[s^-^1]', '[m/s]', '[\circ]', 'y_{orbital}', '[m]', [], '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]'};
+ylabels = {'', 'y_{ECI}', '[m/s]', 'Component', 'Component', '[m]', '[m^-^1]', '[s^-^1]', '[m/s]', '[\circ]', 'y_{orbital}', '[m]', [], '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]'};
 xlabels = {'x_{ECI}', 'x_{Orbital}'};
 zlabels = {'z_{ECI}', 'z_{Orbital}'};
 legend_labels = {{}, {}, {'v_x', 'v_y', 'v_z'}, {'q_0', 'q_1', 'q_2', 'q_3'}, {'q_0', 'q_1', 'q_2', 'q_3'}, {'alt'}, {'B*'}, {'\omega_x', '\omega_y', '\omega_z'}, {'v_x', 'v_y', 'v_z'}, {'\epsilon_p'}, {}, {'a'}, {'e'}, {'i'}, {'\Omega'}, {'\omega'}, {'M'}, {'\nu'}, {'E'}};
@@ -169,18 +170,21 @@ for j = 1:num_plots
     h_plots(i) = subplot(num_plots, 1, j);
     h_lines{i} = f_blank{i}();
     if numel(legend_labels{i})
-        legend(legend_labels{i}, 'location', 'eastoutside', 'FontSize', LEGEND_FONT_SIZE);
+        h_legend = legend(legend_labels{i}, 'location', 'eastoutside');
+        % font size done separately due to strange Octave bug when combining
+        % cell arrays and multiple parameters
+        set(h_legend, 'FontSize', LEGEND_FONT_SIZE)
     end %if
     if i == R
-        h_lines{i}(1).XDataSource = 'data{R}(1:3:end)';
-        h_lines{i}(1).YDataSource = 'data{R}(2:3:end)';
-        h_lines{i}(1).ZDataSource = 'data{R}(3:3:end)';
+        box off
+        grid on
+        R_str = num2str(R);
+        set(h_lines{i}(1), 'xdatasource', ['data{' R_str '}(1:3:end)'], 'ydatasource', ['data{' R_str '}(2:3:end)'], 'zdatasource', ['data{' R_str '}(3:3:end)'])
         set(h_lines{i}(2), 'Marker', 'o', 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'b', 'MarkerSize', 50);
     end %if
     if i ~= R && i ~= ORIENTATION
         for k = 1:numel(h_lines{i})
-            h_lines{i}(k).XDataSource = 'data{1}';
-            h_lines{i}(k).YDataSource = ['data{i}(' num2str(k) ':' num2str(elems(i)) ':end)'];
+          set(h_lines{i}(k), 'xdatasource', 'data{1}', 'ydatasource', ['data{' num2str(i) '}(' num2str(k) ':' num2str(elems(i)) ':end)'])
         end %for
     end %if
     title(titles{i}, 'FontSize', FONT_SIZE)
@@ -224,13 +228,13 @@ while true
     % minus 1, since with realtime data the very last
     % entry might still have been incomplete and thus
     % corrupt
-    len = floor(min(bsxfun(@rdivide, cellfun(@numel, data(reqd)), elems(reqd))))-1;
+    min_len = floor(min(bsxfun(@rdivide, cellfun(@numel, data(reqd)), elems(reqd))))-1;
     for j = 1:num_data
         i = reqd(j);
-        data{i}(elems(i)*len+1:end) = [];
+        data{i}(elems(i)*min_len+1:end) = [];
     end %for
        
-    if len == old_t_size
+    if min_len == old_t_size
         ticks_without_change = ticks_without_change + 1;
         if ticks_without_change > 20
             % no change for a while
@@ -260,7 +264,7 @@ while true
             % eccentricity vector
             % the magic num is 1/mu, Earth's standard gravitational parameter,
             % precomputed for speed
-            e_vec = 2.50877795188635e-15*cross(v, h)-bsxfun(@rdivide, r, r_mag);
+            e_vec = 2.508777951886354381858e-15*cross(v, h)-bsxfun(@rdivide, r, r_mag);
             % scalar eccentricity
             e = sqrt(sum(e_vec.*e_vec));
 
@@ -284,7 +288,7 @@ while true
             E(idx) = E(idx) + 2*pi;
 
             % RAAN
-            Omega = acos(n_1./n_mag);
+            Omega = real(acos(n_1./n_mag));
             idx = n_2 < 0;
             Omega(idx) = 2*pi - Omega(idx);
 
@@ -301,7 +305,7 @@ while true
             rng_b = rng_a + size(r, 2) - 1;
             % the magic num is 1/mu, Earth's standard gravitational parameter,
             % precomputed for speed
-            data{SEMI_MAJOR}(rng_a:rng_b) = 1./(2./r_mag-v_mag.*2.50877795188635e-15.*v_mag);
+            data{SEMI_MAJOR}(rng_a:rng_b) = 1./(2./r_mag-v_mag.*2.508777951886354381858e-15.*v_mag);
             data{TRUE_ANOM}(rng_a:rng_b) = nu*rad_to_deg;
             data{INC}(rng_a:rng_b) = inc*rad_to_deg;
             data{ECC}(rng_a:rng_b) = e;
@@ -311,7 +315,7 @@ while true
             data{ECC_ANOM}(rng_a:rng_b) = E*rad_to_deg;
         end %if
         
-        delete(h_text)
+        if ishandle(h_text), delete(h_text), end
     end %if
    
     if ~ishghandle(h_fig), break, end
@@ -346,10 +350,9 @@ while true
             plot3(h_plots(i), xlim(h_plots(i)), [0 0], [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
             plot3(h_plots(i), [0 0], ylim(h_plots(i)), [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
             plot3(h_plots(i), [0 0], [0 0], zlim(h_plots(i)), 'k', 'LineWidth', at_origin_axis_line_widths)
-        else
-            refreshdata(h_lines{i}, 'caller')
         end %if
     end %for
+    refreshdata(h_fig, 'caller')
 end %while
 arrayfun(@fclose, h_f(reqd));
 end %function

@@ -92,21 +92,22 @@ n = [-h(2), h(1), 0.0];
 n_mag = norm(n);
 
 % true anomaly
-nu = acos(dot(e_vec, r)/(e*r_mag));
+nu = real(acos(dot(e_vec, r)/(e*r_mag)));
 if dot(r, v) < 0.0
     nu = 2*pi - nu;
 end %if
 
 % inclination
-i = acos(h(3)/norm(h));
-
-
+i = real(acos(h(3)/norm(h)));
 
 % eccentric anomaly
-E = 2*atan2(tan(0.5*nu), sqrt((1+e)/(1-e)));
+E = real(2*atan2(tan(0.5*nu), sqrt((1+e)/(1-e))));
+if E < 0
+    E = E + 2*pi;
+end %if
 
 % RAAN
-Omega = acos(n(1)/n_mag);
+Omega = real(acos(n(1)/n_mag));
 if n(2) < 0.0
     Omega = 2*pi - Omega;
 end %if
@@ -119,6 +120,9 @@ end %if
 
 % mean anomaly
 M = E - e*sin(E);
+if M < 0
+    M = M + 2*pi;
+end %if
 
 % semi-major axis
 a = 1.0/(2.0/r_mag-v_mag*v_mag/GM);

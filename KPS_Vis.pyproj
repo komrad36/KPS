@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>KPS_Vis</Name>
     <RootNamespace>KPS_Vis</RootNamespace>
-    <IsWindowsApplication>True</IsWindowsApplication>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

@@ -114,7 +114,7 @@ Download Eigen and GLM (they’re header only!) and install CUDA and GeographicL
 
 Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
 
-NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx".
+NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx". If you care about CUDA functionality, you can adjust the CUDA architecture flags to match your SM.
 
 ## Utilities ##
 The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
@@ -314,7 +314,7 @@ The system responds:
     Inclination: 44.988845461891°
 
 ## KPS ##
-The main event! The user runs KPS as follows:
+The user runs KPS as follows:
 
     KPS poly.kps config.kps
 
@@ -359,11 +359,12 @@ Or, if the user aborted propagation:
     Propagation terminated by user after 0.749 sec realtime.
 
 ## KPS_Vis ##
-The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of ten satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
+The fun part! While KPS is simulating, or afterward (the files are saved to disk), any combination of 18 satellite parameters can be plotted by KPS_Vis. The following table explains the available parameters:
 
 Parameter	|	Description
 ----------- | -----------------------------------
 R			|	Position
+ORIENTATION	|	Live 3-D View of Satellite Polygons
 V			|	Velocity
 Q			|	Attitude Quaternion
 Q_ORB		|	Quaternion to Orbital Frame
@@ -372,21 +373,39 @@ B_STAR		|	Starred Ballistic Coefficient
 W			|	Angular Velocity
 V_B			|	Velocity (in Body Frame)
 E			|	Pointing Error
-ORIENTATION	|	Live 3-D View of Satellite Polygons
+SEMI_MAJOR	|	Semi-major Axis
+ECC			|	Eccentricity
+INC			|	Inclination
+RAAN		|	Right Ascension of Ascending Node
+PERIAPSIS	|	Argument of Periapsis
+MEAN_ANOM	|	Mean Anomaly
+TRUE_ANOM	|	True Anomaly
+ECC_ANOM	|	Eccentric Anomaly
+
 
 Simply choose Python (KPS_Vis.pyw) or MATLAB/Octave (KPS_Vis.m) and open the file for editing. Near the top you will see the list of available parameters. Don’t delete any lines or set any of them to ‘false’; just comment out the ones you don’t want to see, leaving only those you do. For example, the top of the MATLAB version shows:
 
-	% PLOT_R = true;
-	% PLOT_V = true;
-	% PLOT_Q = true;
-	% PLOT_Q_ORB = true;
-	% PLOT_ALT = true;
-	% PLOT_B_STAR = true;
-	PLOT_W = true;
-	PLOT_V_B = true;
-	PLOT_E = true;
-	% PLOT_ORIENTATION = true;
+	plots = [
+	% R
+	ORIENTATION
+	% V
+	% Q
+	% Q_ORB
+	% ALT
+	% B_STAR
+	% W
+	% V_B
+	E
+	% SEMI_MAJOR
+	% ECC
+	% INC
+	% RAAN
+	% PERIAPSIS
+	% MEAN_ANOM
+	% TRUE_ANOM
+	% ECC_ANOM
+	];
 
 More than about 3 plots or so at one time will be too small to be useful. Choose the ones you want, then save the file and run the simulation in the same directory as the KPS output files! No arguments to the script are required.
 
-The simulation starts in REALTIME mode, constantly checking for and adding any new data from the KPS output files. If it sees no change for a while, indicating that simulation has finished, it switches to FINAL mode, cleans up the plots, adjusts the axes, and enables interactive mode for the user, who is then free to zoom, scale, rotate, save plots to image files, etc. This utility requires the matplotlib and numpy modules. Some example screenshots are included with KPS.
+The simulation starts in REALTIME mode, constantly checking for and adding any new data from the KPS output files. If it sees no change for a while, indicating that simulation has finished, it switches to FINAL mode, cleans up the plots, adjusts the axes, and enables interactive mode for the user, who is then free to zoom, scale, rotate, save plots to image files, etc. The Python version requires the matplotlib and numpy modules. Some example screenshots are included with KPS.
