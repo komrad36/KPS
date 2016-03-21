@@ -19,6 +19,10 @@
 
 - - - -
 
+![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/live.png "Sample of Live Orientation Tracking using KPS_Vis")
+
+- - - -
+
 ![picture alt](https://raw.githubusercontent.com/komrad36/KPS/master/stable.jpg "Stabilization of Dart due to Magnetorque and Aerodynamics")
 
 - - - -
