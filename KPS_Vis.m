@@ -47,17 +47,17 @@ face_alpha = 0.8;
 
 plots = [
 % R
-ORIENTATION
+% ORIENTATION
 % V
 % Q
 % Q_ORB
-% ALT
+ALT
 % B_STAR
 % W
 % V_B
-E
+% E
 % SEMI_MAJOR
-% ECC
+ECC
 % INC
 % RAAN
 % PERIAPSIS

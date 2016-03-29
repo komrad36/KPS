@@ -17,6 +17,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -37,7 +38,7 @@ class Params {
 public:
 
 	static const std::vector<std::string> param_names;
-	static const int NUM_PARAMS = 21;
+	static const int NUM_PARAMS = 22;
 
 	static const int MOI_ELEMENTS = 9;
 	static const int SAT_CM_ELEMENTS = 3;
@@ -56,6 +57,7 @@ public:
 	double rel_tol;
 	double max_step_size;
 	std::string mag_model;
+	std::string poly_file;
 	double mag_year;
 	double pitch;
 	Output* output;

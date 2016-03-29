@@ -24,7 +24,7 @@ const double MS_PER_PRINT = 40.0;
 #define KPS_VER "1.0"
 
 const double SEC_PER_MS = 0.001;
-const int EXPECTED_ARGS = 2;
+const int EXPECTED_ARGS = 1;
 
 // signal handling to gracefully deal with CTRL+C or console exit
 #ifdef _WIN32
@@ -117,13 +117,8 @@ void printHeader() {
 
 void printUsage() {
 	std::cout
-		<< "Usage: KPS <polygon_file> <parameters_file>\n"
-		<< "where <polygon_file> is the name of\n"
-		<< "a polygon input file containing comma-separated\n"
-		<< "vertices, one per line, with every " << NUM_VTX << "\n"
-		<< "vertices making up one polygon describing a panel\n"
-		<< "of the satellite.\n\n"
-		<< "<parameters_file> is a KPS input file containing\n"
+		<< "Usage: KPS <parameters_file>\n"
+		<< "where <parameters_file> is a KPS input file containing\n"
 		<< "name-value pairs, in any order, one per line, such as:\n"
 		<< "MAG_GAIN = 15000\n"
 		<< "Spaces and capitalization are ignored.\n"
@@ -155,24 +150,13 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	// --- Parse polygon file ---
-	std::cout
-		<< "KPS Initializing..." << std::endl
-		<< "Parsing requested polygon file \"" << argv[1] << "\"... ";
-	// satellite geometry is an array of 3-vectors,
-	// with each 3-vector representing a vertex
-	std::vector<vec3> poly;
-	int num_poly;
-	if (!parsePoly(poly, num_poly, argv[1])) return EXIT_FAILURE;
-	std::cout << num_poly << " polygon" << (num_poly == 1 ? "" : "s") << " loaded." << std::endl;
-	// --- /Parse polygon file ---
-
-
 	// --- Parse parameters file ---
 	// a map of param names to param values
 	key_val_map raw_params;
-	std::cout << "Parsing requested parameters file \"" << argv[2] << "\"... ";
-	if (!parseParams(raw_params, argv[2])) return EXIT_FAILURE;
+	std::cout
+		<< "KPS Initializing..." << std::endl
+		<< "Parsing requested parameters file \"" << argv[1] << "\"... ";
+	if (!parseParams(raw_params, argv[1])) return EXIT_FAILURE;
 	Params params;
 	if (!params.assign(raw_params)) return EXIT_FAILURE;
 	std::cout
@@ -181,6 +165,18 @@ int main(int argc, char* argv[]) {
 	params.printVals();
 	std::cout << std::string(79, '-') << std::endl << std::endl;
 	// --- Parse parameters file ---
+
+
+	// --- Parse polygon file ---
+
+	std::cout << "Parsing requested polygon file \"" << params.poly_file << "\"... ";
+	// satellite geometry is an array of 3-vectors,
+	// with each 3-vector representing a vertex
+	std::vector<vec3> poly;
+	int num_poly;
+	if (!parsePoly(poly, num_poly, params.poly_file)) return EXIT_FAILURE;
+	std::cout << num_poly << " polygon" << (num_poly == 1 ? "" : "s") << " loaded." << std::endl;
+	// --- /Parse polygon file ---
 
 
 	// --- Initialize gravity model ---

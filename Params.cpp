@@ -23,7 +23,7 @@ const std::vector<std::string> Params::grav_names{ "POINT", "WGS84", "EGM84", "E
 const std::vector<std::string> Params::mag_names{ "WMM2010", "WMM2015", "IGRF11", "IGRF12", "EMM2010", "EMM2015" };
 
 // names of all required parameters
-const std::vector<std::string> Params::param_names{ "MAG_GAIN", "AERO_MODE", "TIME_SINCE_EPOCH_AT_DEPLOY", "GRAV_MODEL", "PROPAGATOR",
+const std::vector<std::string> Params::param_names{ "POLY_FILE", "MAG_GAIN", "AERO_MODE", "TIME_SINCE_EPOCH_AT_DEPLOY", "GRAV_MODEL", "PROPAGATOR",
 													"ABS_TOL", "REL_TOL", "AERO_PITCH", "MAX_STEP_SIZE", "MAG_MODEL", "MAG_YEAR",
 													"BINARY_OUTPUT", "REALTIME_OUTPUT", "SAT_CM", "SAT_INIT_POS", "SAT_INIT_Q",
 													"SAT_INIT_V", "SAT_INIT_W", "SAT_MASS", "SAT_MOI", "TIME_SPAN" };
@@ -31,7 +31,18 @@ const std::vector<std::string> Params::param_names{ "MAG_GAIN", "AERO_MODE", "TI
 // assign specific values to varaibles in parameter struct based on raw strings from ParamInput
 bool Params::assign(const key_val_map& raw_params) {
 	key_val_map::const_iterator pair;
-	const std::string err = "ERROR: One or more required parameters missing. Aborting.\nSee documentation for required parameters.";
+	const std::string err = "ERROR: One or more required parameters missing. Aborting.\nSee documentation or run KPS with no args for required parameters.";
+
+	// --- Polygon File ---
+	if ((pair = raw_params.find("POLY_FILE")) != raw_params.end()) {
+		poly_file = pair->second;
+	}
+	else {
+		std::cerr << std::endl << err << std::endl;
+		return false;
+	}
+	// --- /Polygon File ---
+
 
 	// --- Magnetorque Gain ---
 	if ((pair = raw_params.find("MAG_GAIN")) != raw_params.end()) {
@@ -374,6 +385,7 @@ void Params::printNames() {
 void Params::printVals() {
 	std::cout.precision(STD_DIGITS);
 	std::cout
+		<< "Polygon File: " << poly_file << std::endl
 		<< "Magnetorque Gain: " << mag_gain << std::endl
 		<< "Aero Mode: " << (aero_mode == USE_CPU ? "CPU" : aero_mode == ANALYTICAL ? "Analytical" : "CUDA - Device ID: " + (aero_mode == -1 ? "AUTO" : std::to_string(aero_mode))) << std::endl
 		<< "Time Since Epoch at Deploy: " << time_since_epoch_at_deploy << " s" << std::endl

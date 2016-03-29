@@ -604,7 +604,8 @@ void Aero_CUDA::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	//				within each warp
 	//
 	// These switch statements are out of order intentionally; they are arranged
-	// in order of most likelihood to assist the branch predictor
+	// in order of most likelihood to assist brnaching time, IF the compiler
+	// honors the order (often it doesn't without profile-guided optimization).
 	// (usually ~10 polygons, so 16 threads... sometimes ~6 polygons, so 8, etc...)
 	//
 	switch (precomp_threads) {

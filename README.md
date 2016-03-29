@@ -121,11 +121,12 @@ Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Ty
 NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx". If you care about CUDA functionality, you can adjust the CUDA architecture flags to match your SM.
 
 ## Utilities ##
-The KPS main propagator is run with two arguments: a polygon file, and a configuration file.
+The KPS main propagator is run with just one argument: a configuration file. This means, if you graphical environment supports it, that you can drag-and-drop a config file onto the KPS executable to start a run with that configuration.
 
-The configuration file specifies 21 parameters required by KPS to operate, in any order. Blank lines are ignored. Comments can be entered by beginning a line with #. Capitalization is ignored. A sample configuration file looks like this:
+The configuration file specifies 22 parameters required by KPS to operate, in any order. Blank lines are ignored. Comments can be entered by beginning a line with #. Capitalization is ignored. A sample configuration file looks like this:
 
-    MAG_GAIN = 25e3
+    POLY_FILE = poly.kps
+	MAG_GAIN = 25e3
     TIME_SINCE_EPOCH_AT_DEPLOY = 0.0
     GRAV_MODEL = wgs84
     PROPAGATOR = abm
@@ -148,6 +149,8 @@ The configuration file specifies 21 parameters required by KPS to operate, in an
     TIME_SPAN = 500000
 
 These parameters will now be explained individually:
+
+POLY_FILE = a relative or absolute path to a polygon file containing a list of vertices comprising quadrilaterals that define the satellite body. Typical value: poly.kps
 
 MAG_GAIN = a positive magnetorque gain factor. Magnetorque is currently coded to react against the satellite’s angular velocity, attempting to slow down the satellite’s rotation. Specify a 0 gain factor to disable magnetic torque. Typical value for CubeSat: 30000
 

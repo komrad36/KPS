@@ -64,12 +64,7 @@
 #include <algorithm>
 #include <Eigen/Eigen>
 #include <functional>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <limits>
 #include <vector>
-
 
 template <int N>
 // base propagator class to allow branchless selection of RKDP or ABM
@@ -95,8 +90,6 @@ class RKDP : public Propagator<N> {
 	// --- VARIABLES ---
 private:
 	typedef Eigen::Array<double, N, 1> dEvecN;
-
-	const double eps = std::numeric_limits<double>::epsilon();
 
 	// the ODE function to call for derivative evaluation
 	std::function<dEvecN(double, const dEvecN&)> ode;
@@ -235,8 +228,6 @@ private:
 	typedef Eigen::Array<double, N, 1> dEvecN;
 
 	const int k_max = 12;
-
-	const double eps = std::numeric_limits<double>::epsilon();
 
 	const std::array<double, 13> beta_coef;
 
