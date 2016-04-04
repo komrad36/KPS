@@ -8,7 +8,8 @@
 %
 %	Last updated Mar 20, 2016
 %   This application is entirely my own work.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   Realtime visualization of any combination of the 18 parameters
 %   selectable below. Just comment out the ones you don't want.
@@ -47,17 +48,17 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
-ALT
+% ALT
 % B_STAR
-% W
+W
 % V_B
 % E
 % SEMI_MAJOR
-ECC
+% ECC
 % INC
 % RAAN
 % PERIAPSIS
@@ -82,8 +83,8 @@ elems = [1,3,3,4,4,1,1,3,3,1,0,1,1,1,1,1,1,1,1];
 names = {'t', 'r', 'v', 'q', 'q_orb', 'alt', 'b_star', 'w', 'v_body', 'p_e'};
 titles = {'', 'Position', 'Velocity', 'Quaternion to ECI Frame', 'Quaternion to Orbital Frame', 'Altitude', 'Starred Ballistic Coefficient', 'Angular Velocity', 'Velocity in Body Frame', 'Pointing Error', 'Live Orientation', 'Semi-Major Axis', 'Eccentricity', 'Inclination', 'Longitude of Ascending Node', 'Argument of Periapsis', 'Mean Anomaly', 'True Anomaly', 'Eccentric Anomaly'};
 ylabels = {'', 'y_{ECI}', '[m/s]', 'Component', 'Component', '[m]', '[m^-^1]', '[s^-^1]', '[m/s]', '[\circ]', 'y_{orbital}', '[m]', [], '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]', '[\circ]'};
-xlabels = {'x_{ECI}', 'x_{Orbital}'};
-zlabels = {'z_{ECI}', 'z_{Orbital}'};
+xlabels = {'x_{ECI}', 'x_{orbital}'};
+zlabels = {'z_{ECI}', 'z_{orbital}'};
 legend_labels = {{}, {}, {'v_x', 'v_y', 'v_z'}, {'q_0', 'q_1', 'q_2', 'q_3'}, {'q_0', 'q_1', 'q_2', 'q_3'}, {'alt'}, {'B*'}, {'\omega_x', '\omega_y', '\omega_z'}, {'v_x', 'v_y', 'v_z'}, {'\epsilon_p'}, {}, {'a'}, {'e'}, {'i'}, {'\Omega'}, {'\omega'}, {'M'}, {'\nu'}, {'E'}};
 num_plots = numel(plots);
 compute_keplerian = false;
@@ -351,8 +352,13 @@ while true
             plot3(h_plots(i), [0 0], ylim(h_plots(i)), [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
             plot3(h_plots(i), [0 0], [0 0], zlim(h_plots(i)), 'k', 'LineWidth', at_origin_axis_line_widths)
         end %if
+        if ~exist('OCTAVE_VERSION', 'builtin')
+            refreshdata(h_plots(i), 'caller')
+        end %if
     end %for
-    refreshdata(h_fig, 'caller')
+    if exist('OCTAVE_VERSION', 'builtin')
+        refreshdata(h_fig, 'caller')
+    end %if
 end %while
 arrayfun(@fclose, h_f(reqd));
 end %function
