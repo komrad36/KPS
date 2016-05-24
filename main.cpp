@@ -226,13 +226,13 @@ int main(int argc, char* argv[]) {
 
 	// --- Initialize aero engine ---
 	std::cout << "Initializing aero..." << std::endl;
-	Aero* kdrag;
+	Aero* aero;
 	if (params.aero_mode == USE_CPU) {
-		kdrag = new Aero_CPU(params.pitch, num_poly, &poly[0], params.sat_cm);
+		aero = new Aero_CPU(params.pitch, num_poly, &poly[0], params.sat_cm);
 		std::cout << "CPU aero ready." << std::endl;
 	}
 	else if (params.aero_mode == ANALYTICAL) {
-		kdrag = new Aero_Analytical(params.pitch, num_poly, &poly[0], params.sat_cm);
+		aero = new Aero_Analytical(params.pitch, num_poly, &poly[0], params.sat_cm);
 		std::cout << "Analytical aero ready." << std::endl;
 	}
 	else {
@@ -266,9 +266,9 @@ int main(int argc, char* argv[]) {
 		}
 		eula_check.close();
 
-		Aero_CUDA* kdrag_cuda = new Aero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
-		if (!kdrag_cuda->init(params.aero_mode)) return EXIT_FAILURE;
-		kdrag = kdrag_cuda;
+		Aero_CUDA* aero_cuda = new Aero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
+		if (!aero_cuda->init(params.aero_mode)) return EXIT_FAILURE;
+		aero = aero_cuda;
 		std::cout << "CUDA aero ready." << std::endl;
 	}
 	// polygon data has been copied into aero engine and is no longer needed
@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
 
 	// --- Initialize satellite model ---
 	std::cout << "Spawning satellite..." << std::endl;
-	Satellite sat(earth, *kdrag, params.sat_mass, params.mag_gain, params.time_since_epoch_at_deploy,
+	Satellite sat(earth, *aero, params.sat_mass, params.mag_gain, params.time_since_epoch_at_deploy,
 	{ params.sat_init_pos, params.sat_init_v, params.sat_init_q, params.sat_init_w },
 	params.sat_moi);
 	// --- /Initialize satellite model ---
@@ -352,7 +352,7 @@ int main(int argc, char* argv[]) {
 		<< static_cast<double>(duration_cast<milliseconds>(system_clock::now() - start_RTC).count()) * SEC_PER_MS
 		<< " sec realtime." << std::endl << std::endl;
 
-	delete kdrag;
+	delete aero;
 	delete grav_model;
 	delete mag_model;
 

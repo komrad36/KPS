@@ -14,8 +14,7 @@
 // parameters to several files, one for each parameter.
 //
 
-#ifndef OUTPUT_H
-#define OUTPUT_H
+#pragma once
 
 #include <fstream>
 #include <iostream>
@@ -76,5 +75,3 @@ public:
 	bool init();
 	void write(const double t, const Satellite& sat);
 };
-
-#endif

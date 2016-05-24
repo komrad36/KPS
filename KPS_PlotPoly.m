@@ -98,5 +98,5 @@ plot3(xlim, [0 0], [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
 plot3([0 0], ylim, [0 0], 'k', 'LineWidth', at_origin_axis_line_widths)
 plot3([0 0], [0 0], zlim, 'k', 'LineWidth', at_origin_axis_line_widths)
 if maximize_plot
-    set(gcf, 'Units', 'normalized', 'Position', [0,0,1,1]);
+    set(gcf, 'Units', 'normalized', 'Position', [.5,0,.5,1]);
 end %if

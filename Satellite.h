@@ -41,10 +41,10 @@ private:
 	const mat3 MOI;
 	const mat3 inv_MOI;
 
-	Aero& kdrag;
+	Aero& aero;
 
 public:
-	Satellite(const Earth& earth_model, Aero& kdrag_model, const double sat_mass, const double magnetorquer_gain, const double seconds_since_epoch_at_deploy, const State& initial_state, const mat3 sat_MOI) : state(initial_state), e_state(s_to_e(state)), earth(earth_model), m(sat_mass), mag_gain(magnetorquer_gain), time_since_epoch_at_deploy(seconds_since_epoch_at_deploy), MOI(sat_MOI), inv_MOI(glm::inverse(MOI)), kdrag(kdrag_model) {}
+	Satellite(const Earth& earth_model, Aero& aero_model, const double sat_mass, const double magnetorquer_gain, const double seconds_since_epoch_at_deploy, const State& initial_state, const mat3 sat_MOI) : state(initial_state), e_state(s_to_e(state)), earth(earth_model), m(sat_mass), mag_gain(magnetorquer_gain), time_since_epoch_at_deploy(seconds_since_epoch_at_deploy), MOI(sat_MOI), inv_MOI(glm::inverse(MOI)), aero(aero_model) {}
 
 	bool isInValidState() const;
 

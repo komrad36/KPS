@@ -51,7 +51,7 @@ dEvec13 Satellite::ode(const double t, const dEvec13& ode_e_state) const {
 
 	vec3 aer_force_body, aer_torque_body;
 	// launch aerodynamics engine
-	kdrag.aer(aer_force_body, aer_torque_body, get1976Density(r_mag - earth.R), v_body);
+	aero.aer(aer_force_body, aer_torque_body, get1976Density(r_mag - earth.R), v_body);
 	vec3 aer_force_eci = glm::rotate(ode_state.q, aer_force_body);
 
 	// store aeroforce magnitude for later B* computation by Output engine

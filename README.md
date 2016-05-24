@@ -323,7 +323,7 @@ The system responds:
 ## KPS ##
 The user runs KPS as follows:
 
-    KPS poly.kps config.kps
+    KPS config.kps
 
 The system responds by echoing the parameters and other diagnostic information. If AERO_MODE is set to ANALYTICAL, the aerodynamics module reports analytical-mode initialization:
 

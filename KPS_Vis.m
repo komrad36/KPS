@@ -8,7 +8,7 @@
 %
 %	Last updated Mar 20, 2016
 %   This application is entirely my own work.
-%%%%%%%%
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   Realtime visualization of any combination of the 18 parameters
@@ -48,16 +48,16 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
 % ALT
 % B_STAR
-% W
+W
 % V_B
 % E
-SEMI_MAJOR
+% SEMI_MAJOR
 % ECC
 % INC
 % RAAN
