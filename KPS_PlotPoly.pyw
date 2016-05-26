@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+﻿#!/usr/bin/env python3.4
 
 ####################################################################
 #   KPS_PlotPoly.pyw
@@ -35,7 +35,7 @@ def maximizePlot():
                 mng.resize(*mng.window.maxsize())
         elif backend == 'wxAgg':
             mng.frame.Maximize(True)
-        elif backend == 'QT4Agg':
+        elif backend[:2].upper() == 'QT':
             mng.window.showMaximized()
         else:
             return False
@@ -64,7 +64,7 @@ else:
     ax = fig.gca(projection='3d', aspect='equal')
 
     # load polygons
-    vtx = [[float(x) for x in line.rstrip('\n').split(', ')] for line in f if len(line) > 4 and line[0] != '#']
+    vtx = [[float(x) for x in line.rstrip('\n').split(',')] for line in f if len(line) > 4 and line[0] != '#']
     x, y, z = list(map(list, zip(*vtx)))
     poly = [vtx[i:i + num_vtx] for i in range(0, len(vtx), num_vtx)]
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+﻿#!/usr/bin/env python3.4
 
 ####################################################################
 #   KPS_Vis.py
@@ -98,7 +98,7 @@ def maximizePlot():
                 mng.resize(*mng.window.maxsize())
         elif backend == 'wxAgg':
             mng.frame.Maximize(True)
-        elif backend == 'QT4Agg':
+        elif backend[:2].upper() == 'QT':
             mng.window.showMaximized()
         else:
             return False
@@ -131,7 +131,7 @@ for j in range(num_plots):
         except:
             print('ERROR: failed to open polygon file. Aborting.')
             sys.exit(-1)
-        vtx = np.array([[float(x) for x in line.rstrip('\n').split(', ')] for line in f_orb if len(line) > 4 and line[0] != '#'])
+        vtx = np.array([[float(x) for x in line.rstrip('\n').split(',')] for line in f_orb if len(line) > 4 and line[0] != '#'])
         num_poly = len(vtx) // num_vtx
         f_orb.close()
     else:
