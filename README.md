@@ -104,7 +104,7 @@ The Visual Studio solution actually contains 7 projects – KPS itself and its 6
 
 Make sure KPS itself (the first project listed) is selected, and you’re ready to build.
 
-NOTE: my Visual Studio configurations compile KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to <inherit from parent or project defaults>.
+NOTE: my Visual Studio configurations compile KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to \<inherit from parent or project defaults\>.
 
 ### Instructions for Linux: ###
 
