@@ -38,14 +38,14 @@ class Params {
 public:
 
 	static const std::vector<std::string> param_names;
-	static const int NUM_PARAMS = 22;
+	static constexpr int NUM_PARAMS = 22;
 
-	static const int MOI_ELEMENTS = 9;
-	static const int SAT_CM_ELEMENTS = 3;
-	static const int SAT_INIT_POS_ELEMENTS = 3;
-	static const int SAT_INIT_Q_ELEMENTS = 4;
-	static const int SAT_INIT_V_ELEMENTS = 3;
-	static const int SAT_INIT_W_ELEMENTS = 3;
+	static constexpr int MOI_ELEMENTS = 9;
+	static constexpr int SAT_CM_ELEMENTS = 3;
+	static constexpr int SAT_INIT_POS_ELEMENTS = 3;
+	static constexpr int SAT_INIT_Q_ELEMENTS = 4;
+	static constexpr int SAT_INIT_V_ELEMENTS = 3;
+	static constexpr int SAT_INIT_W_ELEMENTS = 3;
 	
 	double mag_gain;
 	int aero_mode;

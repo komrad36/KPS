@@ -33,19 +33,19 @@
 // 3 for velocity
 // 4 for orientation (quaternion)
 // 3 for angular velocity
-const size_t ODE_VEC_N = 13;
+constexpr size_t ODE_VEC_N = 13;
 
-const int AUTO_SELECT = -1;
+constexpr int AUTO_SELECT = -1;
 
-const int USE_CPU = -2;
+constexpr int USE_CPU = -2;
 
-const int ANALYTICAL = -3;
+constexpr int ANALYTICAL = -3;
 
-const double TESLA_PER_nT = 1e-9;
+constexpr double TESLA_PER_nT = 1e-9;
 
-const size_t STD_DIGITS = std::numeric_limits<double>::digits10;
+constexpr size_t STD_DIGITS = std::numeric_limits<double>::digits10;
 
-const size_t MAX_DIGITS = std::numeric_limits<double>::max_digits10;
+constexpr size_t MAX_DIGITS = std::numeric_limits<double>::max_digits10;
 
 // KPS deals in very small numbers with long accumulations,
 // especially in the integrators.
@@ -60,8 +60,8 @@ const vec3 Y_HAT{ 0.0, 1.0, 0.0 };
 const vec3 Z_HAT{ 0.0, 0.0, 1.0 };
 
 // deg * PI / 180
-inline double deg2rad(const double deg) { return deg * 0.0174532925199432957; }
+constexpr inline double deg2rad(const double deg) { return deg * 0.0174532925199432957; }
 
 // rad * 180 / PI
-inline double rad2deg(const double rad) { return rad * 57.295779513082320876; }
+constexpr inline double rad2deg(const double rad) { return rad * 57.295779513082320876; }
 

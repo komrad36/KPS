@@ -30,7 +30,7 @@ public:
 	const Earth& earth;
 	const double m;
 
-	static double aer_force_mag;
+	double aer_force_mag;
 
 private:
 
@@ -48,7 +48,7 @@ public:
 
 	bool isInValidState() const;
 
-	dEvec13 ode(const double t, const dEvec13& ode_e_state) const;
+	dEvec13 ode(const double t, const dEvec13& ode_e_state);
 
 private:
 

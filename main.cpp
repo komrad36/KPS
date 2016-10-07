@@ -19,12 +19,12 @@
 
 // milliseconds between prints of current propagator step and time
 // < 40 might result in performance impact, especially on Windows
-const double MS_PER_PRINT = 40.0;
+constexpr double MS_PER_PRINT = 50.0;
 
 #define KPS_VER "1.0"
 
-const double SEC_PER_MS = 0.001;
-const int EXPECTED_ARGS = 1;
+constexpr double SEC_PER_MS = 0.001;
+constexpr int EXPECTED_ARGS = 1;
 
 // signal handling to gracefully deal with CTRL+C or console exit
 #ifdef _WIN32
@@ -224,6 +224,7 @@ int main(int argc, char* argv[]) {
 	const Earth earth(params.mag_year, *grav_model, *mag_model);
 	// --- /Initialize geoid model ---
 
+	
 	// --- Initialize aero engine ---
 	std::cout << "Initializing aero..." << std::endl;
 	Aero* aero;
@@ -310,7 +311,7 @@ int main(int argc, char* argv[]) {
 	std::cout << "Initializing propagator..." << std::endl;
 	Propagator<ODE_VEC_N>& propagator(*params.propagator);
 	double t = 0.0;
-	propagator.init(std::bind(&Satellite::ode, sat, std::placeholders::_1, std::placeholders::_2), t, sat.e_state, params.abs_tol, params.rel_tol, params.max_step_size);
+	propagator.init([&sat](double time, const dEvec13& state) {return sat.ode(time, std::ref(state)); }, t, sat.e_state, params.abs_tol, params.rel_tol, params.max_step_size);
 	output.write(t, sat);
 	// --- /Initialize propagator ---
 
@@ -325,6 +326,7 @@ int main(int argc, char* argv[]) {
 	unsigned long long steps = 0;
 
 	// --- Main Propagation Loop ---
+	double lastt = 0.0;
 	while (propagator.step(t, sat.e_state) < params.time_span && sat.isInValidState()) {
 
 		// optional renormalization of quaternion to minimize the impact of integrator numerical error
@@ -336,14 +338,15 @@ int main(int argc, char* argv[]) {
 		++steps;
 		if (duration_cast<milliseconds>((current_RTC = system_clock::now()) - last_print_RTC).count() > MS_PER_PRINT) {
 			last_print_RTC = current_RTC;
-			printf("\r Step %llu | %f sec       ", steps, t);
+			printf("\r Step %llu | Stepsize %f sec | %f sec             ", steps, t - lastt, t);
 			fflush(stdout);
 			if (is_closing) break;
 		}
+		lastt = t;
 	}
 	// --- /Main Propagation Loop ---
 
-	if (!is_closing) printf("\r Step %llu | %f sec         \n", ++steps, sat.isInValidState() ? params.time_span : t);
+	if (!is_closing) printf("\r Step %llu | Stepsize %f sec | %f sec             \n", ++steps, t - lastt, sat.isInValidState() ? params.time_span : t);
 	fflush(stdout);
 
 	std::cout

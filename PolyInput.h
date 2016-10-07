@@ -23,8 +23,8 @@
 #include "Params.h"
 #include "str_util.h"
 
-const int DIMS = 3;
-const int MAX_SUPPORTED_POLY = 512;
+constexpr int DIMS = 3;
+constexpr int MAX_SUPPORTED_POLY = 512;
 
 bool parsePoly(std::vector<vec3>& poly, int& num_poly, const std::string& filename, const char comment_char = '#');
 

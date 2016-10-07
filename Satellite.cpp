@@ -15,11 +15,6 @@
  
 #include "Satellite.h"
 
-// the aeroforce is used to compute B*, but as it's only computed
-// during ODE evaluation and cannot be returned in the usual sense,
-// this variable is used to allow Output to access it.
-double Satellite::aer_force_mag = 0.0;
-
 // check if the satellite is still in orbit
 bool Satellite::isInValidState() const {
 	const double deorbit_r = earth.DEORBIT_ALT + earth.R;
@@ -27,7 +22,7 @@ bool Satellite::isInValidState() const {
 }
 
 // the derivative of an Eigen 13-vector representing the full Satellite State
-dEvec13 Satellite::ode(const double t, const dEvec13& ode_e_state) const {
+dEvec13 Satellite::ode(const double t, const dEvec13& ode_e_state) {
 
 	// --- PRECOMPUTATION ---
 

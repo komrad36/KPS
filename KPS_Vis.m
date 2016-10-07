@@ -48,13 +48,13 @@ face_alpha = 0.8;
 
 plots = [
 % R
-ORIENTATION
+% ORIENTATION
 % V
 % Q
 % Q_ORB
-% ALT
-% B_STAR
-W
+ALT
+B_STAR
+% W
 % V_B
 % E
 % SEMI_MAJOR
@@ -343,7 +343,7 @@ while true
                 plot3(h_plots(i), x([1:end 1], :), y([1:end 1], :), z([1:end 1], :), '-', 'Color', color_if_not_gradient, 'LineWidth', 1)
             else
                 if gradient_if_not_wireframe
-                    patch(x, y, z, z, 'FaceAlpha', face_alpha, 'Parent', h_plots(i))  
+                    patch(x, y, z, x, 'FaceAlpha', face_alpha, 'Parent', h_plots(i))  
                 else
                     patch(x, y, z, color_if_not_gradient, 'FaceAlpha', face_alpha, 'Parent', h_plots(i))
                 end %if

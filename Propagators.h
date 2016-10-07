@@ -37,7 +37,7 @@
 // This is comparable to MATLAB(R)'s or GNU Octave's ode113() function.
 //
 // Neither of these solvers is suitable for highly stiff systems, although
-// at tight tolerance and mdoerate stiffness, they may still work, just
+// at tight tolerance and moderate stiffness, they may still work, just
 // slowly.
 //
 // I have also developed a stiff solver based on the numerical differentiation

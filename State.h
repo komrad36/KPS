@@ -40,21 +40,10 @@
 // struct will be reinterpreted as an Eigen Array, it, too,
 // must align itself along 16-byte boundaries.
 //
-// Annoyingly, VS2013 doesn't support the C++11 alignas() keyword,
-// so it needs a Microsoft-specific alignment request.
-//
-// VS2015 DOES support alignas(), but not CUDA yet... so KPS is
-// currently targeted for VS2013, and as soon as VS2015 supports CUDA
-// this #if check will no longer be required.
-//
 // NOTE: due to this pack request the actual State struct will
 // end up 14 doubles long, not 13. This is okay. The padding is at
 // the end and does not interfere with anything in conversion.
-#if _MSC_VER
-__declspec(align(16)) struct State {
-#else
 struct alignas(16) State {
-#endif
 	// Position in ECI frame [m]
 	vec3 r;
 

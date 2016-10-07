@@ -27,7 +27,7 @@ R  = 6371000.0;
 
 M_PER_KM = 1000.0;
 
-min_alt = 200;
+min_alt = 100;
 max_alt = 1000;
 
 if ~isscalar(x) || ~isscalar(y) || ~isscalar(inc)

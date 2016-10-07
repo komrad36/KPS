@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+﻿#!/usr/bin/env python3.4
 
 ####################################################################
 #   KPS_Vis.py
@@ -50,9 +50,9 @@ ORIENTATION,
 #Q_ORB,
 #ALT,
 #B_STAR,
-#W,
+W,
 #V_B,
-E,
+#E,
 #SEMI_MAJOR,
 #ECC,
 #INC,

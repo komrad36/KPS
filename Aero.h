@@ -27,10 +27,10 @@
 
 #pragma once
 
-#define CLIP_PAD		1e-4
+#define CLIP_PAD		(1e-4)
 
-#define CLIP_MUL		1e16
-#define INV_CLIP_MUL	1e-16
+#define CLIP_MUL		(1e16)
+#define INV_CLIP_MUL	(1e-16)
 
 #include "glm_util.h"
 

@@ -22,13 +22,13 @@
 
 #include <cmath>
 
-const int INT_M_PER_KM		= 1000;
-const double M_PER_KM		= 1000.0;
-const double KM_PER_M		= 1e-3;
+constexpr int INT_M_PER_KM		= 1000;
+constexpr double M_PER_KM		= 1000.0;
+constexpr double KM_PER_M		= 1e-3;
 
 double get1976Density(const double alt);
 
-const double tbl[]{
+constexpr double tbl[]{
 	1.22499915588771,
 	1.11161862716639,
 	1.00648588649886,

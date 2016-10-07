@@ -33,17 +33,17 @@ struct GravityModel {
 class Earth {
 public:
 
-	// standard gravitational parameter
-	static const double GM;
-
 	// rate of Earth's rotation about its axis [rad/sec]
-	static const double OMEGA;
+	static constexpr double Earth::OMEGA = 7.29211509e-5;
+
+	// standard gravitational parameter
+	static constexpr double Earth::GM = 398600441800000.0;
 
 	// Earth's radius [m]
-	static const double R;
+	static constexpr double Earth::R = 6371000.0;
 
 	// altitude at which deorbit should be assumed [m]
-	static const double DEORBIT_ALT;
+	static constexpr double Earth::DEORBIT_ALT = 100000.0;
 
 	// Earth's magnetic field is volatile, so the desired year is required as an input to GeographicLib
 	// magnetic models
