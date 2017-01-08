@@ -35,8 +35,11 @@ dEvec13 Satellite::ode(const double t, const dEvec13& ode_e_state) {
 	// get B in Body frame
 	vec3 mag_body = getMagFieldInBodyFrame(t, ode_state);
 
-	//get v in Body frame
-	vec3 v_body = glm::rotate(glm::conjugate(ode_state.q), ode_state.v);
+	// compute v relative to atmosphere, which rotates with Earth
+	vec3 v_rel = ode_state.v + vec3{ Earth::OMEGA*ode_state.r.y, -Earth::OMEGA*ode_state.r.x, 0.0 };
+
+	// get v_rel in Body frame
+	vec3 v_rel_body = glm::rotate(glm::conjugate(ode_state.q), v_rel);
 
 	// compute angular-velocity-opposing magnetorque in body
 	// see KPS research paper for more info
@@ -46,7 +49,7 @@ dEvec13 Satellite::ode(const double t, const dEvec13& ode_e_state) {
 
 	vec3 aer_force_body, aer_torque_body;
 	// launch aerodynamics engine
-	aero.aer(aer_force_body, aer_torque_body, get1976Density(r_mag - earth.R), v_body);
+	aero.aer(aer_force_body, aer_torque_body, get1976Density(r_mag - earth.R), v_rel_body);
 	vec3 aer_force_eci = glm::rotate(ode_state.q, aer_force_body);
 
 	// store aeroforce magnitude for later B* computation by Output engine

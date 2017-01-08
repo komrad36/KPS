@@ -48,13 +48,13 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
-ALT
-B_STAR
-% W
+% ALT
+% B_STAR
+W
 % V_B
 % E
 % SEMI_MAJOR
