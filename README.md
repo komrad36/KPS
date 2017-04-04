@@ -35,9 +35,9 @@
 
 ## Overview ##
 
-KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using CUDA or CPU for analytical (area-based) OR collision-based real-time aerodynamics simulation, for Windows and Linux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by a custom Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
+KPS is a free and open source, flexible, efficient software infrastructure for simultaneous orbital and attitude propagation of satellites in Low Earth Orbit (LEO), using real-time attitude-based analytical (frontal area-based) OR collision-based aerodynamics simulation, for Windows and Linux. Gravitational, magnetic, and atmospheric modeling is performed. Magnetic and gravity gradient torques are considered. Fast propagation at excellent accuracy is performed by a custom Adams-Bashforth-Moulton linear multistep numerical integrator written in C++.
 
-Realtime visualization and other useful tools are dually available as MATLAB(r) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself, as a comprehensive infrastructure that covers a wide range of topics fusing aerospace and high-performance computing.
+Realtime visualization and other useful tools are dually available as MATLAB(r) (GNU Octave compatible) and Python utilities included with KPS.  This project is designed for direct application by CubeSat teams and other groups interested in aerodynamic stabilization of satellites in Low Earth Orbit. It is also designed for education in itself as a comprehensive infrastructure that covers a wide range of topics fusing aerospace and performance computing.
 
 ## License ##
 
@@ -64,10 +64,6 @@ Clipper is licensed under the 2003 Boost Software License: http://www.boost.org/
 - Eigen: http://eigen.tuxfamily.org/
 Eigen is licensed under the MPL2 license: https://www.mozilla.org/en-US/MPL/2.0/
 
-- NVIDIA CUDA: https://developer.nvidia.com/cuda-toolkit
-(only if KPS is run in CUDA mode)
-NVIDIA CUDA has a EULA available at http://docs.nvidia.com/cuda/eula/ for end users. By using this application in CUDA mode (and the CUDA drivers necessary to run it in CUDA mode), you agree to the terms of the NVIDIA CUDA EULA available at the link above. Pursuant to the redistribution terms of this EULA, KPS prompts users to accept these terms on its first launch in CUDA mode. KPS does NOT distribute the CUDA Toolkit, only the CUDA runtime libraries as permitted by the EULA, and even then, only as a binary component of the statically compiled KPS executable.
-
 ## Obtaining the software ##
 Head to https://github.com/komrad36/KPS for the latest version! Feel free to contact me at kareem.omar@uah.edu with any questions.
 
@@ -76,27 +72,24 @@ No. I provide precompiled binaries for those who just want to use the applicatio
 
 The Windows executable is called 'KPS.exe'. The Linux executable is called 'KPS'.
 
-I provide these binaries statically compiled for x64 with AVX instructions; if you compile it yourself, you may select between a static and a dynamic build and change the architecture targets.
-
 ## I want to compile it! ##
 Here are instructions for Windows and Linux:
 
 ### Instructions for Windows: ###
-You'll need Microsoft Visual Studio 2013. I'll migrate to 2015 as soon as CUDA supports it. Open 'KPS.sln' in Visual Studio. I have prepared 4 Build Configurations for you to select from: Release, ReleaseStatic, Debug, and DebugStatic. They do exactly what it says on the box. The "ReleaseStatic" configuration is used to generate the precompiled binary.
+You'll need Microsoft Visual Studio 2015. Open 'KPS.sln' in Visual Studio.
 
-Four external libraries are needed:
+Three external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
 - glm: http://glm.g-truc.net/
 - Eigen: http://eigen.tuxfamily.org/
-- CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -> VC++ Directories. You’ll need to modify the Include Directories for all four, and the Library Directories just for GeographicLib and CUDA.
+Download Eigen and GLM (they’re header only!) and install GeographicLib. Point Visual Studio to them in the KPS project’s configuration, under Configuration Properties -> VC++ Directories. You’ll need to modify the Include Directories for all three, and the Library Directories just for GeographicLib.
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include;C:\glm;C:\Eigen;C:\GeographicLib-1.45_VS2013\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);
+    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include;C:\glm;C:\Eigen;C:\GeographicLib-1.45_VS2015\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);
 
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\lib\x64;C:\GeographicLib-1.45_VS2013\windows\Release64;$(LibraryPath)
+    C:\GeographicLib-1.45_VS2015\windows\Release64;$(LibraryPath)
 
 Just modify the entries to match the include and lib locations where you installed the libraries.
 
@@ -104,21 +97,16 @@ The Visual Studio solution actually contains 7 projects – KPS itself and its 6
 
 Make sure KPS itself (the first project listed) is selected, and you’re ready to build.
 
-NOTE: my Visual Studio configurations compile KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, go to the KPS project's configuration, under Configuration Properties -> C/C++ -> Code Generation. Set the Enable Enhanced Instruction Set option to \<inherit from parent or project defaults\>.
-
 ### Instructions for Linux: ###
 
-Four external libraries are needed:
+Three external libraries are needed:
 - GeographicLib: https://sourceforge.net/projects/geographiclib/files/distrib/
 - glm: http://glm.g-truc.net/
 - Eigen: http://eigen.tuxfamily.org/
-- CUDA: https://developer.nvidia.com/cuda-toolkit
 
-Download Eigen and GLM (they’re header only!) and install CUDA and GeographicLib. Open the ‘Makefile’ and adjust the Includes and Library paths *if needed* (you probably won’t have to if you let every library install to its default location).
+Download Eigen and GLM (they’re header only!) and install GeographicLib. Open the ‘Makefile’ and adjust the Includes and Library paths *if needed* (you probably won’t have to if you let every library install to its default location).
 
-Type ‘make’ to compile with a dynamic link to the CUDA runtime libraries. Type ‘make static’ to compile the static and fully standalone version.
-
-NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx". If you care about CUDA functionality, you can adjust the CUDA architecture flags to match your SM.
+NOTE: my Makefile compiles KPS with the AVX instruction set enabled for better performance. If your processor does not support AVX, edit the Makefile and remove all instances of the switch "-mavx".
 
 ## Utilities ##
 The KPS main propagator is run with just one argument: a configuration file. This means, if your graphical environment supports it, that you can drag-and-drop a config file onto the KPS executable to start a run with that configuration.
@@ -160,13 +148,13 @@ GRAV_MODEL = the GeographicLib gravity model to use for gravitational accelerati
 
 PROPAGATOR = the numerical integrator to use. Available integrators are: “RKDP” and “ABM”. The first is a Runge-Kutta Dormand-Prince pair solver, like MATLAB’s ode45(). The second is a faster and more accurate Adams-Bashforth-Moulton linear multistep solver, like MATLAB’s ode113(). ABM should generally be used.
 
-AERO_MODE = Specify ANALYTICAL to use area-based analytical aerodynamics force and torque computation. See the KPS research paper for more information. To use CUDA collision mode, specify a nonnegative integer representing the device ID of the desired CUDA device, or specify CUDA_AUTO to autoselect the fastest CUDA device on your system, or specify CPU to use CPU-only collision-based aerodynamics. NOTE: for large linear pitch values, CPU can be *faster* due to the overhead of constantly preparing data for GPU processing – experiment and see what is fastest for your configuration. ANALYTICAL is recommended as it is the most accurate, yet still quite fast. CPU with very coarse pitch settings is likely to be the absolute fastest option if extreme accuracy is not desired.
+AERO_MODE = Specify ANALYTICAL to use area-based analytical aerodynamics force and torque computation. See the KPS research paper for more information. Specify GRID to use collision-based aerodynamics. ANALYTICAL is recommended as it is the most accurate, yet still quite fast. GRID with very coarse pitch settings is likely to be the absolute fastest option if extreme accuracy is not desired.
 
 ABS_TOL = the absolute tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation. Typical value: 1e-6
 
 REL_TOL = the relative tolerance of the intergrator. Tighter (smaller) tolerances result in slower propagation, but unlike absolute tolerance, a low relative tolerance is *critical* for a chaotic system like satellite propagation. Typical value: 2.3e-14
 
-AERO_PITCH = if in collision-based aerodynamics mode, this is the linear pitch between test particle collisions for the aerodynamics engine, in meters. This value is IGNORED if ANALYTICAL aero mode is in use. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so don’t make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
+AERO_PITCH = if in collision-based (GRID) aerodynamics mode, this is the linear pitch between test particle collisions for the aerodynamics engine, in meters. This value is IGNORED if ANALYTICAL aero mode is in use. Smaller pitch results in more accurate aerodynamics, but simulation time increases with the inverse square of this value, so don’t make it too small! Choose a value accurate enough to nicely cover the satellite surface. For a CubeSat, 0.005 to 0.03 is a good starting point (i.e. between 5 mm and 3 cm from one simulated collision to the next). Typical value: 0.01
 
 MAX_STEP_SIZE = the maximum step size in seconds between two steps during integration. The integrators are both adaptive step size, meaning that they adjust the step size as necessary to maintain the requested tolerances while moving as fast as they can. This value doesn’t usually need to be adjusted. Typical value: 26000 
 

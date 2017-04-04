@@ -202,7 +202,6 @@ void BinaryOutput::write(const double t, const Satellite& sat) {
 
 	out[6].write(reinterpret_cast<const char*>(&q_orb), sizeof(quat));
 
-
 	out[7].write(reinterpret_cast<const char*>(&sat.state.w), sizeof(vec3));
 
 	// starred ballistic coefficient

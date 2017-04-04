@@ -32,7 +32,7 @@ num_vtx = 4;
 H = 0.3;
 
 % panel angle
-PA = 130.0 / 180.0 * pi;
+PA = 0.0 / 180.0 * pi;
 
 % header string to go at the top of the output polygon file
 header = ['# 6U Dart\n# Panel Length: ', num2str(H), ...

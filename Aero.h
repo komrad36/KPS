@@ -10,7 +10,8 @@
 *   This application is entirely my own work.
 *******************************************************************/
 //
-// Aero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
+// Aero uses collision-based or analytical modes and operates on a satellite
+// or body defined as a series of polygons
 // in 3-D space. When supplied with air density and velocity (in the Body frame),
 // it approximates the drag force and torque on the body by simulating
 // collisions and accumulating impulses and angular impulses per unit time.
@@ -43,111 +44,11 @@
 #include <vector>
 #include <cstdint>
 
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <device_launch_parameters.h>
-
-// compute the next highest power of 2 above 'x'
-// returns 'x' if it's already a power of 2
-//
-// useful for CUDA when it's necessary to dispatch
-// a power-of-two number of threads (for reductions)
-inline int32_t nextHigherPow2(int32_t x) {
-	--x;
-	x |= x >> 1;
-	x |= x >> 2;
-	x |= x >> 4;
-	x |= x >> 8;
-	x |= x >> 16;
-	return ++x;
-}
-
-// pure virtual base class allowing branchless selection of CPU vs CUDA vs Analytical
+// pure virtual base class allowing branchless selection of Grid vs Analytical
 class Aero {
 public:
 	virtual void aer(vec3& f, vec3& t, const double rho, const vec3& v) = 0;
 	virtual ~Aero() {}
-};
-
-class Aero_CUDA : public Aero {
-	// --- VARIABLES ---
-private:
-
-	// device ptr to rotated polygons
-	vec3* d_P_rot;
-
-	// device ptr to forces accumulated by a CUDA block
-	vec3* d_block_sums_f;
-
-	// host ptr to forces accumulated by a CUDA block
-	vec3* block_sums_f;
-
-	// device ptr to torques accumulated by a CUDA block
-	vec3* d_block_sums_t;
-
-	// host ptr to torques accumulated by a CUDA block
-	vec3* block_sums_t;
-
-	// device ptr to polygon normal vectors
-	vec3* d_N;
-
-	// device ptr to precomputation results
-	double* d_precomp;
-
-	// device ptrs to polygon bounds
-	double* d_min_y;
-	double* d_max_y;
-	double* d_min_z;
-	double* d_max_z;
-
-	// device ptr to accumulated total bounds
-	double* d_totals;
-
-	// host array of accumulated total bounds
-	double* totals;
-
-	int cur_block_sums;
-
-	// device ptr to rotated satellite center of mass
-	vec3* d_CM_R;
-
-	// host ptr to Body frame polygons
-	vec3* const P_s;
-
-	// host ptr to rotated polygons
-	vec3* P_rot;
-
-	// CUDA Device ID
-	int cuda_device;
-
-	// linear pitch between collisions
-	const double pitch;
-
-	// scalar constant (2A = 2*pitch^2) that multiplies force
-	// see KPS research paper
-	const double f_scalar;
-
-	const int num_poly;
-
-	const int total_pts;
-
-	// host storage of satellite center of mass
-	vec3 CM;
-
-	// --- /VARIABLES ---
-
-
-	// --- METHODS ---
-public:
-	Aero_CUDA(const double linear_pitch, const int num_polygons, const vec3* const poly, const vec3 sat_CM);
-
-	~Aero_CUDA();
-
-	void aer(vec3& f, vec3& t, const double rho, const vec3& v);
-
-	bool init(const int cuda_device);
-
-	// --- /METHODS ---
 };
 
 // functionoid to compare two vectors by their y-component
@@ -164,7 +65,7 @@ struct compare_z{
 	}
 };
 
-class Aero_CPU : public Aero {
+class Aero_Grid : public Aero {
 	// --- VARIABLES ---
 private:
 
@@ -234,7 +135,7 @@ private:
 
 public:
 
-	Aero_CPU(const double linear_pitch, const int num_polygons, const vec3* const poly, const vec3 sat_CM) :
+	Aero_Grid(const double linear_pitch, const int num_polygons, const vec3* const poly, const vec3 sat_CM) :
 		pitch(linear_pitch),
 		num_poly(num_polygons),
 		f_scalar(2.0*linear_pitch*linear_pitch),
@@ -255,7 +156,7 @@ public:
 		}
 	}
 
-	~Aero_CPU() {
+	~Aero_Grid() {
 		delete[] P_s;
 		delete[] N;
 		delete[] precomp;
@@ -305,7 +206,7 @@ private:
 	// ptr to rotated polygons
 	vec3* const P_rot;
 
-	bool* const lower_idx_is_above;
+	std::vector<bool> lower_idx_is_above;
 
 	ClipperLib::Clipper clipper;
 
@@ -344,9 +245,9 @@ public:
 		min_z(new double[num_polygons]),
 		max_z(new double[num_polygons]),
 		P_rot(new vec3[num_polygons * NUM_VTX]),
-		lower_idx_is_above(new bool[num_polygons * num_polygons]) {
+		lower_idx_is_above(num_polygons * num_polygons, false) {
 
-		// silence unused parameter
+		// silence unused para	meter
 		static_cast<void>(linear_pitch);
 	
 		// copy polygon data into internal storage
@@ -364,7 +265,6 @@ public:
 		delete[] min_z;
 		delete[] max_z;
 		delete[] P_rot;
-		delete[] lower_idx_is_above;
 	}
 
 	void aer(vec3& f, vec3& t, const double rho, const vec3& v);

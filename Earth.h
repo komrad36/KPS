@@ -34,16 +34,16 @@ class Earth {
 public:
 
 	// rate of Earth's rotation about its axis [rad/sec]
-	static constexpr double Earth::OMEGA = 7.29211509e-5;
+	static constexpr double OMEGA = 7.29211509e-5;
 
 	// standard gravitational parameter
-	static constexpr double Earth::GM = 398600441800000.0;
+	static constexpr double GM = 398600441800000.0;
 
 	// Earth's radius [m]
-	static constexpr double Earth::R = 6371000.0;
+	static constexpr double R = 6371000.0;
 
 	// altitude at which deorbit should be assumed [m]
-	static constexpr double Earth::DEORBIT_ALT = 100000.0;
+	static constexpr double DEORBIT_ALT = 100000.0;
 
 	// Earth's magnetic field is volatile, so the desired year is required as an input to GeographicLib
 	// magnetic models

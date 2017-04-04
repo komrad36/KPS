@@ -37,7 +37,7 @@ constexpr size_t ODE_VEC_N = 13;
 
 constexpr int AUTO_SELECT = -1;
 
-constexpr int USE_CPU = -2;
+constexpr int GRID = -2;
 
 constexpr int ANALYTICAL = -3;
 

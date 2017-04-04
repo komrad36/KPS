@@ -10,7 +10,8 @@
 *   This application is entirely my own work.
 *******************************************************************/
 //
-// Aero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
+// Aero uses collision-based or analytical modes and operates on a satellite
+// or body defined as a series of polygons
 // in 3-D space. When supplied with air density and velocity (in the Body frame),
 // it approximates the drag force and torque on the body by simulating
 // collisions and accumulating impulses and angular impulses per unit time.
@@ -24,8 +25,8 @@
 
 #include "Aero.h"
 
-// collide simulated particles to approximate the resulting forces and torques,
-// 'f' and 't'
+// analyze visible satellite geometry to determine the resulting forces and torques,
+// 'f' and 't', assuming specular reflection
 void Aero_Analytical::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 
 	double v_mag2 = glm::length2(v);
@@ -73,6 +74,7 @@ void Aero_Analytical::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 		// convert to integer coords as required by Clipper library to prevent numerical error
 		// currently hardcoded to 4 vertices for speed; modify if you change NUM_VTX,
 		// or just substitute a for loop to handle all cases automatically (slower)
+		// or a template solution (more complicated)
 		//
 		// CLIP_MUL is chosen to minimize numerical error and remain within the bounds of 64-bit signed integers
 		// for typical polygon coordinates
@@ -188,7 +190,6 @@ void Aero_Analytical::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 	}
 
 	// --- /COMPUTE ---
-
 
 	// Use of ROTATOR (Rodrigues' formula) to rotate summed force and torque BACK TO BODY FRAME
 	// (note the negative sign)

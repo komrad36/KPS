@@ -45,13 +45,15 @@ inline void tokenize(std::vector<std::string>& vals, const std::string& s, const
 }
 
 // transform an entire string to lowercase, ignoring non-alpha characters
-inline void tolower(std::string& s) {
+inline std::string tolower(std::string s) {
 	std::transform(s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::tolower));
+	return s;
 }
 
 // transform an entire string to uppercase, ignoring non-alpha characters
-inline void toupper(std::string& s) {
+inline std::string toupper(std::string s) {
 	std::transform(s.begin(), s.end(), s.begin(), std::ptr_fun<int, int>(std::toupper));
+	return s;
 }
 
 

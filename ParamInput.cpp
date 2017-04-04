@@ -37,10 +37,9 @@ bool parseParams(key_val_map& params, const std::string& filename, const char de
 		}
 		else {
 			pair.first = trim(line.substr(0, delim_location));
-			toupper(pair.first);
+			pair.first = toupper(pair.first);
 
 			pair.second = trim(line.substr(delim_location + 1));
-			toupper(pair.second);
 
 			if (pair.first.empty()) {
 				std::cerr << std::endl << "WARN: ignoring line " << line_num << " in input file due to empty parameter name." << std::endl;

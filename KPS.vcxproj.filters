@@ -1,55 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{05e256b8-90a6-4ea8-bb40-fc4abd6090d1}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="CPP Files">
-      <UniqueIdentifier>{ed94460b-9283-4645-a1da-649e80873df8}</UniqueIdentifier>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="CU Files">
-      <UniqueIdentifier>{8c5a4e6f-fa6f-4c48-859b-cdf328d33b49}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="Aero_CUDA.cu">
-      <Filter>CU Files</Filter>
-    </CudaCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Aero_Analytical.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Aero_CPU.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="clipper.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileInput.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Output.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParamInput.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Params.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PolyInput.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Satellite.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
-    <ClCompile Include="US1976.cpp">
-      <Filter>CPP Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aero.h">
@@ -97,5 +60,40 @@
     <ClInclude Include="US1976.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Aero_Analytical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Aero_CPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="clipper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParamInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Params.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolyInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Satellite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="US1976.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

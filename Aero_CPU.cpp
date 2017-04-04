@@ -10,7 +10,8 @@
 *   This application is entirely my own work.
 *******************************************************************/
 //
-// Aero uses CUDA or CPU and operates on a satellite or body defined as a series of polygons
+// Aero uses collision-based or analytical modes and operates on a satellite
+// or body defined as a series of polygons
 // in 3-D space. When supplied with air density and velocity (in the Body frame),
 // it approximates the drag force and torque on the body by simulating
 // collisions and accumulating impulses and angular impulses per unit time.
@@ -30,7 +31,7 @@
 #define NONE			(-9999999.0)
 
 // internal collision routine
-void Aero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2) {
+void Aero_Grid::collide(vec3& f, vec3& t, const double rho, const double v_mag2) {
 	vec3 best_N, r;
 
 	vec3 sum_F_compensation{ 0.0, 0.0, 0.0 };
@@ -110,7 +111,7 @@ void Aero_CPU::collide(vec3& f, vec3& t, const double rho, const double v_mag2) 
 
 // collide simulated particles to approximate the resulting forces and torques,
 // 'f' and 't'
-void Aero_CPU::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
+void Aero_Grid::aer(vec3& f, vec3& t, const double rho, const vec3& v) {
 
 	// zero out 'f' and 't'
 	f = t = vec3();

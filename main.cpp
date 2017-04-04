@@ -11,8 +11,8 @@
 *******************************************************************/
 //
 // KPS is a simultaneous orbital and attitude propagator for
-// satellites in Low-Earth Orbit, using either CUDA or CPU
-// for aerodynamics simulation. See my GitHub, the README file,
+// satellites in Low-Earth Orbit with attitude-based
+// aerodynamics simulation. See my GitHub, the README file,
 // and/or the KPS research paper for more information.
 //
 
@@ -21,7 +21,7 @@
 // < 40 might result in performance impact, especially on Windows
 constexpr double MS_PER_PRINT = 50.0;
 
-#define KPS_VER "1.0"
+#define KPS_VER "1.1"
 
 constexpr double SEC_PER_MS = 0.001;
 constexpr int EXPECTED_ARGS = 1;
@@ -48,8 +48,6 @@ constexpr int EXPECTED_ARGS = 1;
 #include "Params.h"
 #include "Propagators.h"
 #include "Satellite.h"
-
-const std::string CUDA_EULA_FILE_NAME = "CUDA_EULA_ACCEPTED";
 
 using std::chrono::system_clock;
 using std::chrono::duration_cast;
@@ -208,7 +206,7 @@ int main(int argc, char* argv[]) {
 	GeographicLib::MagneticModel* mag_model;
 	// GeographicLib constructors throw a GeographicException on failure to init
 	try {
-		mag_model = new GeographicLib::MagneticModel{ params.mag_model };
+		mag_model = new GeographicLib::MagneticModel(params.mag_model);
 	}
 	catch (const std::exception& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl
@@ -228,50 +226,15 @@ int main(int argc, char* argv[]) {
 	// --- Initialize aero engine ---
 	std::cout << "Initializing aero..." << std::endl;
 	Aero* aero;
-	if (params.aero_mode == USE_CPU) {
-		aero = new Aero_CPU(params.pitch, num_poly, &poly[0], params.sat_cm);
+	if (params.aero_mode == GRID) {
+		aero = new Aero_Grid(params.pitch, num_poly, &poly[0], params.sat_cm);
 		std::cout << "CPU aero ready." << std::endl;
 	}
-	else if (params.aero_mode == ANALYTICAL) {
+	else {
 		aero = new Aero_Analytical(params.pitch, num_poly, &poly[0], params.sat_cm);
 		std::cout << "Analytical aero ready." << std::endl;
 	}
-	else {
-		// if in CUDA mode, check if the user has accepted the CUDA EULA
-		std::ifstream eula_check(CUDA_EULA_FILE_NAME);
-		if (!eula_check.is_open()) {
-			// if not, prompt the user immediately.
-			std::cout
-				<< "\nKPS has been started in CUDA mode. CUDA is (c) NVIDIA Corporation.\n"
-				<< "Use of the CUDA runtime libraries requires that you agree to the CUDA End-User\n"
-				<< "License Agreement (EULA) available at http://docs.nvidia.com/cuda/eula/\n\n"
-				<< "Do you agree to these terms? Type YES to indicate agreement.\n" << std::endl;
 
-			std::string response;
-			std::cin >> response;
-			std::cout << std::endl;
-
-			if (response == "YES") {
-				// if user accepts EULA, record user's choice for future runs
-				std::ofstream eula_save(CUDA_EULA_FILE_NAME);
-				eula_save.close();
-			}
-			else {
-				// if not, terminate.
-				std::cerr
-					<< "ERROR: user did not accept the NVIDIA CUDA EULA. KPS can only be run in CPU\n"
-					<< "or Analytical mode unless the user accepts the NVIDIA CUDA EULA. Aborting." << std::endl;
-				return EXIT_FAILURE;
-			}
-
-		}
-		eula_check.close();
-
-		Aero_CUDA* aero_cuda = new Aero_CUDA(params.pitch, num_poly, &poly[0], params.sat_cm);
-		if (!aero_cuda->init(params.aero_mode)) return EXIT_FAILURE;
-		aero = aero_cuda;
-		std::cout << "CUDA aero ready." << std::endl;
-	}
 	// polygon data has been copied into aero engine and is no longer needed
 	poly.clear();
 	// --- /Initialize aero engine ---
@@ -331,7 +294,6 @@ int main(int argc, char* argv[]) {
 
 		// optional renormalization of quaternion to minimize the impact of integrator numerical error
 		// not that crucial because the integrators are really good
-		// in one test, the quaternion norm was 1.00000000596 after 2 years of simulated orbit (!)
 		sat.state.q = glm::normalize(sat.state.q);
 
 		output.write(t, sat);

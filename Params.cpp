@@ -85,22 +85,17 @@ bool Params::assign(const key_val_map& raw_params) {
 	// --- /Aerodynamics Simulation Linear Pitch ---
 
 
-	// --- CUDA Device ID ---
+	// --- Aerodynamics Mode ---
 	if ((pair = raw_params.find("AERO_MODE")) != raw_params.end()) {
-		if (pair->second == "CUDA_AUTO") {
-			aero_mode = AUTO_SELECT;
+		if (toupper(pair->second) == "GRID") {
+			aero_mode = GRID;
 		}
-		else if (pair->second == "CPU") {
-			aero_mode = USE_CPU;
-		}
-		else if (pair->second == "ANALYTICAL") {
+		else if (toupper(pair->second) == "ANALYTICAL") {
 			aero_mode = ANALYTICAL;
 		}
-		else if ((aero_mode = atoi(pair->second.c_str())) < 0) {
-			std::cerr << std::endl << "ERROR: for AERO_MODE, specify a valid CUDA device ID for grid mode," << std::endl
-				<< "or CUDA_AUTO to auto-select the device with the highest GFLOPS for grid mode," << std::endl
-				<< "or CPU to disable CUDA and use the CPU exclusively for grid mode," << std::endl
-				<< "or ANALYTICAL to analytically perform frontal area computation." << std::endl;
+		else {
+			std::cerr << std::endl << "ERROR: for AERO_MODE, specify GRID for grid (approximated collisions) mode," << std::endl
+				<< "or ANALYTICAL to analytically perform frontal area computation (recommended)." << std::endl;
 			return false;
 		}
 	}
@@ -108,7 +103,7 @@ bool Params::assign(const key_val_map& raw_params) {
 		std::cerr << std::endl << err << std::endl;
 		return false;
 	}
-	// --- /CUDA Device ID ---
+	// --- /Aerodynamics Mode ---
 
 
 	// --- Seconds Since Epoch at Satellite Deploy ---
@@ -124,9 +119,8 @@ bool Params::assign(const key_val_map& raw_params) {
 
 	// --- Gravitational Model ---
 	if ((pair = raw_params.find("GRAV_MODEL")) != raw_params.end()) {
-		if (std::any_of(grav_names.begin(), grav_names.end(), [pair](std::string s){return pair->second == s; })) {
-			grav_model = pair->second;
-			tolower(grav_model);
+		if (std::any_of(grav_names.begin(), grav_names.end(), [pair](std::string s){return toupper(pair->second) == s; })) {
+			grav_model = tolower(pair->second);
 		}
 		else {
 			std::cerr << std::endl << "ERROR: specified gravity model not found. Aborting." << std::endl;
@@ -142,17 +136,17 @@ bool Params::assign(const key_val_map& raw_params) {
 
 	// --- Propagator ---
 	if ((pair = raw_params.find("PROPAGATOR")) != raw_params.end()) {
-		if (pair->second == "RKDP") {
+		if (toupper(pair->second) == "RKDP") {
 			propagator = new RKDP<ODE_VEC_N>();
 		}
-		else if (pair->second == "ABM") {
+		else if (toupper(pair->second) == "ABM") {
 			propagator = new ABM<ODE_VEC_N>();
 		}
 		else {
 			std::cerr << std::endl << "ERROR: specified propagator not found. Aborting." << std::endl;
 			return false;
 		}
-		propagator_name = pair->second;
+		propagator_name = toupper(pair->second);
 	}
 	else {
 		std::cerr << std::endl << err << std::endl;
@@ -196,7 +190,7 @@ bool Params::assign(const key_val_map& raw_params) {
 
 	// --- Magnetic Model ---
 	if ((pair = raw_params.find("MAG_MODEL")) != raw_params.end()) {
-		if (std::any_of(mag_names.begin(), mag_names.end(), [pair](std::string s){return pair->second == s; })) {
+		if (std::any_of(mag_names.begin(), mag_names.end(), [pair](std::string s){return toupper(pair->second) == s; })) {
 			mag_model = pair->second;
 			tolower(mag_model);
 		}
@@ -225,7 +219,7 @@ bool Params::assign(const key_val_map& raw_params) {
 
 	// --- Binary Output? ---
 	if ((pair = raw_params.find("BINARY_OUTPUT")) != raw_params.end()) {
-		binary_output = (pair->second == "TRUE");
+		binary_output = (toupper(pair->second) == "TRUE");
 	}
 	else {
 		std::cerr << std::endl << err << std::endl;
@@ -236,7 +230,7 @@ bool Params::assign(const key_val_map& raw_params) {
 
 	// --- Realtime Output? ---
 	if ((pair = raw_params.find("REALTIME_OUTPUT")) != raw_params.end()) {
-		realtime_output = (pair->second == "TRUE");
+		realtime_output = (toupper(pair->second) == "TRUE");
 		if (binary_output) {
 			output = new BinaryOutput(realtime_output);
 		}
@@ -387,7 +381,7 @@ void Params::printVals() {
 	std::cout
 		<< "Polygon File: " << poly_file << std::endl
 		<< "Magnetorque Gain: " << mag_gain << std::endl
-		<< "Aero Mode: " << (aero_mode == USE_CPU ? "CPU" : aero_mode == ANALYTICAL ? "Analytical" : "CUDA - Device ID: " + (aero_mode == -1 ? "AUTO" : std::to_string(aero_mode))) << std::endl
+		<< "Aero Mode: " << (aero_mode == GRID ? "GRID" : "Analytical") << std::endl
 		<< "Time Since Epoch at Deploy: " << time_since_epoch_at_deploy << " s" << std::endl
 		<< "Gravitational Model: " << grav_model << std::endl
 		<< "Propagator: " << propagator_name << std::endl
