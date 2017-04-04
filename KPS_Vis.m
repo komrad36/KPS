@@ -37,7 +37,7 @@ at_origin_axis_line_widths = 1;
 gradient_if_not_wireframe = true;
 color_if_not_gradient = 'blue';
 num_vtx = 4;
-poly_file = 'cube.kps';
+poly_file = 'poly.kps';
 
 % for MATLAB only, won't work in Octave
 face_alpha = 0.8;
@@ -48,13 +48,13 @@ face_alpha = 0.8;
 
 plots = [
 % R
-% ORIENTATION
+ORIENTATION
 % V
 % Q
 % Q_ORB
-ALT
+% ALT
 % B_STAR
-% W
+W
 % V_B
 % E
 SEMI_MAJOR
