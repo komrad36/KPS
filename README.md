@@ -87,7 +87,7 @@ Download Eigen and GLM (they’re header only!) and install GeographicLib. Point
 
 My Include Directories and Library Directories look like this, respectively, for Release x64:
 
-    C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.5\include;C:\glm;C:\Eigen;C:\GeographicLib-1.45_VS2015\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);
+    C:\glm;C:\Eigen;C:\GeographicLib-1.45_VS2015\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);
 
     C:\GeographicLib-1.45_VS2015\windows\Release64;$(LibraryPath)
 
@@ -318,16 +318,10 @@ The system responds by echoing the parameters and other diagnostic information. 
     Initializing aero...
     Analytical aero ready.
 	
-If AERO_MODE is set to CPU, the aerodynamics module reports CPU initialization:
+If AERO_MODE is set to GRID, the aerodynamics module reports grid initialization:
 
     Initializing aero...
-    CPU aero ready.
-	
-Otherwise, the aerodynamics module reports CUDA initialization:
-
-    Initializing aero...
-    CUDA aero initialized on device 0: GeForce GTX 780M
-    CUDA aero ready.
+    Grid aero ready.
 
 If all initialization is successful, the system reports:
 

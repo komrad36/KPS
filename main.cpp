@@ -228,7 +228,7 @@ int main(int argc, char* argv[]) {
 	Aero* aero;
 	if (params.aero_mode == GRID) {
 		aero = new Aero_Grid(params.pitch, num_poly, &poly[0], params.sat_cm);
-		std::cout << "CPU aero ready." << std::endl;
+		std::cout << "Grid aero ready." << std::endl;
 	}
 	else {
 		aero = new Aero_Analytical(params.pitch, num_poly, &poly[0], params.sat_cm);
