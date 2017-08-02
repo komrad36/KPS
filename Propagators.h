@@ -74,10 +74,6 @@ class Propagator {
 private:
 	typedef Eigen::Array<double, N, 1> dEvecN;
 public:
-	// this class contains Eigen variables, which need alignment
-	// to permit use of the fastest SSE SIMD instructions
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 	virtual void init(std::function<dEvecN(double, const dEvecN&)> odefun, const double t0, const dEvecN& y0, const double abs_tolerance, const double rel_tolerance, const double max_step) = 0;
 	
 	virtual double step(double& t_out, dEvecN& y_out) = 0;
